@@ -1,0 +1,47 @@
+.home-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #1e1e1e;
+  color: white;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  font-weight: bold;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.hero-section {
+  padding: 50px 20px;
+  background: linear-gradient(135deg, #ff3b62, #ff8a00);
+  color: white;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.cta-button {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: white;
+  color: #ff3b62;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.cta-button:hover {
+  background: #ff3b62;
+  color: white;
+}
