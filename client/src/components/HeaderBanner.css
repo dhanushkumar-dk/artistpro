@@ -1,0 +1,28 @@
+.header-banner {
+  background-color: #007bff; /* Blue background color */
+  color: white; /* Text color */
+}
+
+.profile-icon svg {
+  cursor: pointer; /* Make the icon look clickable */
+}
+
+.title-container {
+  flex-grow: 1;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+@media (max-width: 576px) {
+  .profile-icon svg {
+    width: 30px; /* Adjust size for smaller screens */
+    height: 30px;
+  }
+
+  h1 {
+    font-size: 20px; /* Adjust font size for smaller screens */
+  }
+}

@@ -3,6 +3,7 @@
 const mongoose = require("mongoose");
 
 const FormDataSchema = new mongoose.Schema({
+  userId: { type: String, required: true, unique: true }, // Added userId
   role: { type: String, required: true }, // Musician, Artist, User
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
