@@ -42,7 +42,7 @@ const Register = () => {
         instruments,
         description,
       })
-      .then((result) => {
+      .then(() => {
         alert("Registered successfully! Please Login to proceed.");
         navigate("/login");
       })
@@ -50,161 +50,181 @@ const Register = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <Link to="/home">
-        <button className="btn btn-primary">Home</button>
-      </Link>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit} className="mt-4">
-        <div className="mb-3">
-          <label htmlFor="role" className="form-label">
-            Role
-          </label>
-          <select
-            className="form-select"
-            id="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="Musician">Musician</option>
-            <option value="Artist">Artist</option>
-            <option value="User">User</option>
-          </select>
+    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div className="card p-4 shadow-lg w-100" style={{ maxWidth: "600px" }}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="mb-0">Register</h3>
+          <Link to="/home" className="btn btn-outline-primary btn-sm">
+            Home
+          </Link>
         </div>
-        <div className="mb-3">
-          <label htmlFor="firstName" className="form-label">
-            First Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="firstName"
-            placeholder="Enter your first name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="lastName" className="form-label">
-            Last Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="lastName"
-            placeholder="Enter your last name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="country" className="form-label">
-            Country
-          </label>
-          <select
-            className="form-select"
-            id="country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            required
-          >
-            <option value="">Choose Country</option>
-            {Object.keys(countries).map((c, idx) => (
-              <option key={idx} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="state" className="form-label">
-            State
-          </label>
-          <select
-            className="form-select"
-            id="state"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            required
-            disabled={!country}
-          >
-            <option value="">Choose State</option>
-            {states.map((s, idx) => (
-              <option key={idx} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-        {role === "Musician" && (
+
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="instruments" className="form-label">
-              Instruments
+            <label htmlFor="role" className="form-label">
+              Role
+            </label>
+            <select
+              className="form-select"
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="Musician">Musician</option>
+              <option value="Artist">Artist</option>
+              <option value="User">User</option>
+            </select>
+          </div>
+
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label htmlFor="firstName" className="form-label">
+                First Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="firstName"
+                placeholder="Enter first name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="col-md-6 mb-3">
+              <label htmlFor="lastName" className="form-label">
+                Last Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="lastName"
+                placeholder="Enter last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">
+              Email
             </label>
             <input
-              type="text"
+              type="email"
               className="form-control"
-              id="instruments"
-              placeholder="List instruments (comma separated)"
-              value={instruments}
-              onChange={(e) => setInstruments(e.target.value.split(","))}
+              id="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-        )}
-        {role === "Artist" && (
+
           <div className="mb-3">
-            <label htmlFor="description" className="form-label">
-              Artist Description
+            <label htmlFor="password" className="form-label">
+              Password
             </label>
-            <textarea
+            <input
+              type="password"
               className="form-control"
-              id="description"
-              placeholder="Write something about yourself"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              id="password"
+              placeholder="Create password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-            ></textarea>
+            />
           </div>
-        )}
-        <button type="submit" className="btn btn-primary">
-          Register
-        </button>
-      </form>
-      <p className="mt-3">
-        Already have an account? <a href="/login">Login here</a>.
-      </p>
+
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label htmlFor="country" className="form-label">
+                Country
+              </label>
+              <select
+                className="form-select"
+                id="country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                required
+              >
+                <option value="">Choose Country</option>
+                {Object.keys(countries).map((c, idx) => (
+                  <option key={idx} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-md-6 mb-3">
+              <label htmlFor="state" className="form-label">
+                State
+              </label>
+              <select
+                className="form-select"
+                id="state"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                required
+                disabled={!country}
+              >
+                <option value="">Choose State</option>
+                {states.map((s, idx) => (
+                  <option key={idx} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {role === "Musician" && (
+            <div className="mb-3">
+              <label htmlFor="instruments" className="form-label">
+                Instruments
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="instruments"
+                placeholder="E.g. Guitar, Piano, Drums"
+                value={instruments}
+                onChange={(e) => setInstruments(e.target.value.split(","))}
+                required
+              />
+            </div>
+          )}
+
+          {role === "Artist" && (
+            <div className="mb-3">
+              <label htmlFor="description" className="form-label">
+                Artist Description
+              </label>
+              <textarea
+                className="form-control"
+                id="description"
+                placeholder="Describe your art or experience"
+                rows="3"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              ></textarea>
+            </div>
+          )}
+
+          <button type="submit" className="btn btn-primary w-100">
+            Register
+          </button>
+        </form>
+
+        <p className="text-center mt-3 mb-0">
+          Already have an account? <Link to="/login">Login here</Link>.
+        </p>
+      </div>
     </div>
   );
 };

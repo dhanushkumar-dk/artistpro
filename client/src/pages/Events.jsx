@@ -6,135 +6,124 @@ import FeaturedFestivals from "../components/FeaturedFestivals";
 import FooterEvent from "../components/FooterEvent";
 
 const Events = () => {
-  const [selectedFilters, setSelectedFilters] = useState([]); // Track selected filters as an array
+  const [selectedFilters, setSelectedFilters] = useState([]);
 
   const filters = [
-    {
-      name: "Today",
-      url: "https://www.bandsintown.com/today/genre/all-genres",
-    },
-    {
-      name: "This Week",
-      url: "https://www.bandsintown.com/this-week/genre/all-genres",
-    },
-    {
-      name: "This Month",
-      url: "https://www.bandsintown.com/this-month/genre/all-genres",
-    },
-    {
-      name: "Choose Dates",
-      url: "https://www.bandsintown.com/choose-dates/genre/all-genres?calendarTrigger=true",
-    },
-    {
-      name: "Live Streams",
-      url: "https://www.bandsintown.com/all-dates/genre/all-genres?livestreams=true",
-    },
-    {
-      name: "Alternative",
-      url: "https://www.bandsintown.com/all-dates/genre/alternative",
-    },
-    { name: "Blues", url: "https://www.bandsintown.com/all-dates/genre/blues" },
-    {
-      name: "Christian/Gospel",
-      url: "https://www.bandsintown.com/all-dates/genre/christian-gospel",
-    },
-    {
-      name: "Classical",
-      url: "https://www.bandsintown.com/all-dates/genre/classical",
-    },
-    {
-      name: "Country",
-      url: "https://www.bandsintown.com/all-dates/genre/country",
-    },
-    {
-      name: "Comedy",
-      url: "https://www.bandsintown.com/all-dates/genre/comedy",
-    },
-    {
-      name: "Electronic",
-      url: "https://www.bandsintown.com/all-dates/genre/electronic",
-    },
-    { name: "Folk", url: "https://www.bandsintown.com/all-dates/genre/folk" },
-    {
-      name: "Hip Hop",
-      url: "https://www.bandsintown.com/all-dates/genre/hip-hop",
-    },
-    { name: "Jazz", url: "https://www.bandsintown.com/all-dates/genre/jazz" },
-    { name: "Latin", url: "https://www.bandsintown.com/all-dates/genre/latin" },
-    { name: "Metal", url: "https://www.bandsintown.com/all-dates/genre/metal" },
-    { name: "Pop", url: "https://www.bandsintown.com/all-dates/genre/pop" },
-    { name: "Punk", url: "https://www.bandsintown.com/all-dates/genre/punk" },
-    {
-      name: "R&B/Soul",
-      url: "https://www.bandsintown.com/all-dates/genre/rnb-soul",
-    },
-    {
-      name: "Reggae",
-      url: "https://www.bandsintown.com/all-dates/genre/reggae",
-    },
-    { name: "Rock", url: "https://www.bandsintown.com/all-dates/genre/rock" },
-    {
-      name: "All Genres",
-      url: "https://www.bandsintown.com/all-dates/genre/all-genres",
-    },
+    { name: "Today" },
+    { name: "This Week" },
+    { name: "This Month" },
+    { name: "Choose Dates" },
+    { name: "Live Streams" },
+    { name: "Alternative" },
+    { name: "Blues" },
+    { name: "Christian/Gospel" },
+    { name: "Classical" },
+    { name: "Country" },
+    { name: "Comedy" },
+    { name: "Electronic" },
+    { name: "Folk" },
+    { name: "Hip Hop" },
+    { name: "Jazz" },
+    { name: "Latin" },
+    { name: "Metal" },
+    { name: "Pop" },
+    { name: "Punk" },
+    { name: "R&B/Soul" },
+    { name: "Reggae" },
+    { name: "Rock" },
+    { name: "All Genres" },
   ];
 
-  // Handle filter selection, toggling between adding and removing filters
+  const isAllGenresSelected = selectedFilters.length === 0;
+
   const handleFilterChange = (filterName) => {
     if (filterName === "All Genres") {
-      // Reset filters if "All Genres" is selected
       setSelectedFilters([]);
     } else {
-      setSelectedFilters((prevSelectedFilters) => {
-        if (prevSelectedFilters.includes(filterName)) {
-          // If filter is already selected, remove it
-          return prevSelectedFilters.filter((filter) => filter !== filterName);
-        } else {
-          // If filter is not selected, add it
-          return [...prevSelectedFilters, filterName];
-        }
-      });
+      setSelectedFilters((prev) =>
+        prev.includes(filterName)
+          ? prev.filter((f) => f !== filterName)
+          : [...prev, filterName]
+      );
     }
+  };
+
+  const removeFilter = (filterName) => {
+    setSelectedFilters((prev) => prev.filter((f) => f !== filterName));
   };
 
   return (
     <div>
       <EventsBanner />
 
-      {/* Scrollable Navbar-style filter section */}
-      <div className="container-fluid mt-4">
+      {/* Section heading */}
+      <div className="text-center mt-4">
+        <h2 className="fw-bold">Discover Events</h2>
+        <p className="text-muted">Filter by genre, time, or experience</p>
+      </div>
+
+      {/* Scrollable Filter Navbar */}
+      <div className="container-fluid mt-3">
         <div
-          className="d-flex overflow-auto py-2"
-          style={{ whiteSpace: "nowrap" }}
+          className="d-flex overflow-auto py-2 px-3 bg-white shadow-sm sticky-top z-2"
+          style={{ whiteSpace: "nowrap", gap: "10px" }}
         >
-          {/* Map through the filters array and render filter buttons */}
           {filters.map((filterItem) => (
-            <a
+            <button
               key={filterItem.name}
-              href={filterItem.url}
-              className={`nav-item nav-link mx-2 ${
-                selectedFilters.includes(filterItem.name) ? "active" : "" // Conditionally apply 'active' class
+              type="button"
+              className={`btn ${
+                selectedFilters.includes(filterItem.name) ||
+                (filterItem.name === "All Genres" && isAllGenresSelected)
+                  ? "btn-primary text-white"
+                  : "btn-outline-secondary"
               }`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleFilterChange(filterItem.name); // Toggle filter selection
-              }}
+              onClick={() => handleFilterChange(filterItem.name)}
               style={{
-                display: "inline-block",
-                fontSize: "18px", // Font size for the items
-                padding: "14px", // Padding for each item
+                fontSize: "14px",
+                borderRadius: "50px",
+                padding: "8px 18px",
+                transition: "all 0.3s ease",
+                whiteSpace: "nowrap",
               }}
             >
               {filterItem.name}
-            </a>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Pass the selectedFilters prop to the child components */}
-      <SellingFast filters={selectedFilters} />
-      <VenuesNearYou filters={selectedFilters} />
-      <FeaturedFestivals filters={selectedFilters} />
+      {/* Active Filters Display */}
+      {!isAllGenresSelected && (
+        <div className="container mt-3 mb-2">
+          <div className="d-flex flex-wrap align-items-center gap-2">
+            <span className="text-muted">Active Filters:</span>
+            {selectedFilters.map((filter) => (
+              <span
+                key={filter}
+                className="badge rounded-pill bg-primary d-flex align-items-center"
+                style={{ padding: "6px 12px" }}
+              >
+                {filter}
+                <button
+                  type="button"
+                  onClick={() => removeFilter(filter)}
+                  className="btn-close btn-close-white btn-sm ms-2"
+                  aria-label="Remove"
+                  style={{ fontSize: "10px" }}
+                ></button>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Event Sections */}
+      <div className="container py-4">
+        <SellingFast filters={selectedFilters} />
+        <VenuesNearYou filters={selectedFilters} />
+        <FeaturedFestivals filters={selectedFilters} />
+      </div>
 
       <FooterEvent />
     </div>

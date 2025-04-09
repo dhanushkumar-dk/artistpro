@@ -1,4 +1,5 @@
 import React from "react";
+import heroBannerImage from "../data/assets/heroBannerTablet.png"; // Import the image
 
 const EventsBanner = () => {
   return (
@@ -19,8 +20,7 @@ const EventsBanner = () => {
       <div
         className="d-flex flex-column align-items-start justify-content-start text-left"
         style={{
-          backgroundImage:
-            "url(https://assets.prod.bandsintown.com/images/homeIcon/heroBannerTablet.png)",
+          backgroundImage: `url(${heroBannerImage})`, // Use the imported image here
           backgroundSize: "cover",
           backgroundPosition: "center",
           height: "500px",

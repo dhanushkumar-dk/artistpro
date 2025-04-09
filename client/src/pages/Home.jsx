@@ -88,7 +88,7 @@ const Home = () => {
           </div>
         </>
       ) : (
-        <div className="container  mt-5">
+        <div className="container mt-5 d-flex flex-column align-items-center">
           <h2>Welcome, Guest!</h2>
           <div className="nav-log-reg p-2">
             <Link to="/login">
