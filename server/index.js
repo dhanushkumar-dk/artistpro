@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const FormDataModel = require("./models/FormData");
+const Post = require("./models/createPostFormData");
 
 const app = express();
 const PORT = 5000;
@@ -31,11 +32,13 @@ app.post("/register", async (req, res) => {
       instruments,
       description,
     } = req.body;
+
     const existingUser = await FormDataModel.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new FormDataModel({
       userId: new mongoose.Types.ObjectId().toString(),
       role,
@@ -70,13 +73,14 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign({ userId: user.userId }, SECRET_KEY, {
       expiresIn: "1h",
     });
+
     res.json({ token });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// Get User Data
+// Get Logged-in User Info
 app.get("/user", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -90,6 +94,68 @@ app.get("/user", async (req, res) => {
 
     res.json(user);
   } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Create Post
+app.post("/posts", async (req, res) => {
+  const { token, message } = req.body;
+
+  if (!token || !message) {
+    return res.status(400).json({ message: "Token and message are required" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const user = await FormDataModel.findOne({ userId: decoded.userId });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const newPost = new Post({
+      userId: user.userId,
+      userName: `${user.firstName} ${user.lastName}`,
+      message,
+    });
+
+    await newPost.save();
+    res.status(201).json({ post: newPost });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get All Posts
+app.get("/posts", async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ dateTime: -1 });
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Toggle Like/Dislike
+app.put("/posts/like/:id", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.userId;
+    const post = await Post.findById(req.params.id);
+
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const alreadyLiked = post.likedUsers.includes(userId);
+    if (alreadyLiked) {
+      post.likedUsers = post.likedUsers.filter((id) => id !== userId);
+    } else {
+      post.likedUsers.push(userId);
+    }
+
+    await post.save();
+    res.json({ post });
+  } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });

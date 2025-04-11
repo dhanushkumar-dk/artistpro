@@ -1,44 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-const HeaderBanner = () => {
+const HeaderBanner = ({ userName, setUserName }) => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("Guest");
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axios
-      .get("http://localhost:5000/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.data) {
-          setUserName(`${res.data.firstName} ${res.data.lastName}`);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-      });
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token"); // Remove the token
+    localStorage.removeItem("userName"); // Remove the userName from localStorage
     setUserName("Guest"); // Reset the userName to "Guest"
-    navigate("/login"); // Navigate to the home page or login page
+    navigate("/login"); // Navigate to the login page
   };
 
   return (
     <div
-      className="d-flex justify-content-between align-items-center bg-primary text-white p-3"
+      className="d-flex flex-column flex-md-row justify-content-between align-items-center bg-primary text-white p-3"
       style={{ position: "relative" }}
     >
-      {/* Profile icon and username on the left */}
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-center mb-3 mb-md-0">
         <div className="profile-icon me-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,12 +31,10 @@ const HeaderBanner = () => {
         <span className="fs-4">{userName}</span>
       </div>
 
-      {/* Title in the center */}
-      <div className="text-center w-100">
+      <div className="text-center w-100 mb-3 mb-md-0">
         <h1 className="m-0">Artist Collaboration Hub</h1>
       </div>
 
-      {/* Logout button on the right */}
       <div className="d-flex justify-content-end">
         <button className="btn btn-light" onClick={handleLogout}>
           Logout
