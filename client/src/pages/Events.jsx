@@ -1,14 +1,20 @@
 import React, { useState } from "react";
-import EventsBanner from "../components/EventsBanner";
+
+import HeaderBanner from "../components/Banners/HeaderBanner"; // Import HeaderBanner
+import Navbar from "../components/Navbar"; // Import Navbar
+
+import EventsBanner from "../components/Banners/EventsBanner";
 import SellingFast from "../components/SellingFast";
 import VenuesNearYou from "../components/VenuesNearYou";
 import FeaturedFestivals from "../components/FeaturedFestivals";
-import FooterEvent from "../components/FooterEvent";
+
+import FooterEvent from "../components/Footers/FooterEvent";
 
 const Events = () => {
   const [selectedFilters, setSelectedFilters] = useState([]);
 
   const filters = [
+    { name: "All Genres" },
     { name: "Today" },
     { name: "This Week" },
     { name: "This Month" },
@@ -31,7 +37,6 @@ const Events = () => {
     { name: "R&B/Soul" },
     { name: "Reggae" },
     { name: "Rock" },
-    { name: "All Genres" },
   ];
 
   const isAllGenresSelected = selectedFilters.length === 0;
@@ -54,6 +59,9 @@ const Events = () => {
 
   return (
     <div>
+      <HeaderBanner />
+      <Navbar />
+
       <EventsBanner />
 
       {/* Section heading */}

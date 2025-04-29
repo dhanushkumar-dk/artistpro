@@ -1,5 +1,5 @@
 import React from "react";
-import heroBannerImage from "../data/assets/heroBannerTablet.png"; // Import the image
+import heroBannerImage from "../../data/assets/heroBannerTablet.png"; // Import the image
 
 const EventsBanner = () => {
   return (

@@ -9,9 +9,9 @@ const FormDataSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+
   country: { type: String, required: true },
   state: { type: String, required: true },
-  instruments: { type: [String], default: [] }, // Only for musicians
   description: { type: String, default: "" }, // Only for artists
 });
 
