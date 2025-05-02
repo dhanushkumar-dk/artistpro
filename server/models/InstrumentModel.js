@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const instrumentSchema = new mongoose.Schema({
   instrumentName: { type: String, required: true },
   instrumentDescription: { type: String },
+  category: { type: String, required: true },
   amount: { type: String },
   image: { type: String }, // Store image URL or filename
   userId: { type: String, required: true },

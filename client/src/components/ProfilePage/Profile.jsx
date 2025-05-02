@@ -21,7 +21,6 @@ const ProfilePage = () => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        // console.log(res.data);
         if (res.data) {
           setUser(res.data);
           setFormData(res.data);
@@ -81,6 +80,7 @@ const ProfilePage = () => {
       .catch((err) => console.error("Save failed:", err));
   };
 
+  // ✅ MODIFIED renderField: added "editable" argument to allow disabling edits for specific fields
   const renderField = (label, name, type = "text", half = false) => (
     <div className={`mb-3 ${half ? "col-md-6" : "col-12"}`}>
       <label className="form-label text-secondary fw-semibold">{label}</label>
@@ -124,7 +124,6 @@ const ProfilePage = () => {
               <p className="text-muted mb-0">Manage your profile information</p>
             </div>
 
-            {/* Edit Profile Section */}
             <div className="mt-3 mt-md-0">
               {!isEditing ? (
                 <button
@@ -174,11 +173,17 @@ const ProfilePage = () => {
             )}
           </div>
 
-          {/* Details */}
+          {/* Fields */}
           <div className="row">
             {renderField("First Name", "firstName", "text", true)}
             {renderField("Last Name", "lastName", "text", true)}
-            {renderField("Email", "email", "email", true)}
+            <div className="mb-3 col-md-6">
+              <label className="form-label text-secondary fw-semibold">
+                Email
+              </label>
+              <div className="form-control bg-light">{user.email || "-"}</div>
+            </div>
+            {/* {renderField("Email", "email", "email", true, false)} */}
             {renderField("Password", "password", "password", true)}
 
             {/* Country */}
@@ -231,6 +236,34 @@ const ProfilePage = () => {
               ) : (
                 <div className="form-control bg-light">{user.state || "-"}</div>
               )}
+            </div>
+
+            {/* Address */}
+            <div className="mb-3 col-12">
+              <label className="form-label text-secondary fw-semibold">
+                Address
+              </label>
+              {isEditing ? (
+                <textarea
+                  className="form-control"
+                  name="address"
+                  rows={2}
+                  value={formData.address || ""}
+                  onChange={handleChange}
+                />
+              ) : (
+                <div className="form-control bg-light">
+                  {user.address || "-"}
+                </div>
+              )}
+            </div>
+
+            {/* Phone Number (view-only) */}
+            <div className="mb-3 col-md-6">
+              <label className="form-label text-secondary fw-semibold">
+                Phone Number
+              </label>
+              <div className="form-control bg-light">{user.phone || "-"}</div>
             </div>
           </div>
         </div>

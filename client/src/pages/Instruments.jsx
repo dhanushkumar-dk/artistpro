@@ -13,6 +13,7 @@ const InstrumentsComponent = () => {
   const [formData, setFormData] = useState({
     instrumentName: "",
     description: "",
+    category: "",
     amount: "",
     imageUrl: "",
     userId: "",
@@ -155,6 +156,7 @@ const InstrumentsComponent = () => {
     const formDataToSubmit = new FormData();
     formDataToSubmit.append("instrumentName", formData.instrumentName);
     formDataToSubmit.append("instrumentDescription", formData.description);
+    formDataToSubmit.append("category", formData.category);
     formDataToSubmit.append("amount", formData.amount);
     formDataToSubmit.append("userId", formData.userId);
     formDataToSubmit.append("userName", formData.userName);
@@ -330,6 +332,17 @@ const InstrumentsComponent = () => {
                   />
                 </div>
               )}
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  name="category"
+                  className="form-control"
+                  placeholder="Instrument Category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
               <div className="col-12">
                 <textarea

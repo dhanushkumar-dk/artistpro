@@ -1,17 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-import HeaderBanner from "../components/Banners/HeaderBanner"; // Import HeaderBanner
-import Navbar from "../components/Navbar"; // Import Navbar
-
+import HeaderBanner from "../components/Banners/HeaderBanner";
+import Navbar from "../components/Navbar";
 import EventsBanner from "../components/Banners/EventsBanner";
-import SellingFast from "../components/SellingFast";
-import VenuesNearYou from "../components/VenuesNearYou";
-import FeaturedFestivals from "../components/FeaturedFestivals";
-
+import SellingFast from "../components/eventcomponents/SellingFast";
+// import VenuesNearYou from "../components/eventcomponents/VenuesNearYou";
+// import FeaturedFestivals from "../components/eventcomponents/FeaturedFestivals";
 import FooterEvent from "../components/Footers/FooterEvent";
 
 const Events = () => {
   const [selectedFilters, setSelectedFilters] = useState([]);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const filters = [
     { name: "All Genres" },
@@ -57,11 +57,15 @@ const Events = () => {
     setSelectedFilters((prev) => prev.filter((f) => f !== filterName));
   };
 
+  // Handle navigation to the Add Event page
+  const handleAddEventClick = () => {
+    navigate("/addnewevent");
+  };
+
   return (
     <div>
       <HeaderBanner />
       <Navbar />
-
       <EventsBanner />
 
       {/* Section heading */}
@@ -126,11 +130,18 @@ const Events = () => {
         </div>
       )}
 
+      {/* Add a new event button */}
+      <div className="text-center mb-4">
+        <button className="btn btn-success" onClick={handleAddEventClick}>
+          Add New Event
+        </button>
+      </div>
+
       {/* Event Sections */}
       <div className="container py-4">
         <SellingFast filters={selectedFilters} />
-        <VenuesNearYou filters={selectedFilters} />
-        <FeaturedFestivals filters={selectedFilters} />
+        {/* <VenuesNearYou filters={selectedFilters} />
+        <FeaturedFestivals filters={selectedFilters} /> */}
       </div>
 
       <FooterEvent />

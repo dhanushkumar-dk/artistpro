@@ -11,6 +11,8 @@ const Register = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [states, setStates] = useState([]);
@@ -19,14 +21,12 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const countries = Country.getAllCountries();
-    setAllCountries(countries);
+    setAllCountries(Country.getAllCountries());
   }, []);
 
   useEffect(() => {
     if (country) {
-      const selectedStates = State.getStatesOfCountry(country);
-      setStates(selectedStates);
+      setStates(State.getStatesOfCountry(country));
       setState("");
     } else {
       setStates([]);
@@ -35,6 +35,13 @@ const Register = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const selectedCountry = Country.getCountryByCode(country);
+    const fullPhone =
+      selectedCountry && selectedCountry.phonecode
+        ? `+${selectedCountry.phonecode} ${phone}`
+        : phone;
+
     axios
       .post("http://localhost:5000/register", {
         role,
@@ -42,6 +49,8 @@ const Register = () => {
         lastName,
         email,
         password,
+        phone: fullPhone,
+        address,
         country,
         state,
         description,
@@ -186,6 +195,41 @@ const Register = () => {
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="phone" className="form-label">
+                Phone Number
+              </label>
+              <div className="input-group">
+                <span className="input-group-text">
+                  +{Country.getCountryByCode(country)?.phonecode || ""}
+                </span>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="phone"
+                  placeholder="Enter phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="address" className="form-label">
+                Address
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="address"
+                placeholder="Enter address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              />
             </div>
 
             {role === "Artist" && (

@@ -17,6 +17,7 @@ import MyInstruments from "./components/ProfilePage/MyInstrument";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AddEventForm from "./pages/AddEventForm";
 
 // Add inside JSX
 <ToastContainer position="top-center" autoClose={3000} />;
@@ -40,6 +41,7 @@ const App = () => {
             {/* Add a route for the instrument detail page with dynamic ID */}
             <Route path="/instrument/:id" element={<InstrumentDetail />} />
             <Route path="/MyInstruments" element={<MyInstruments />} />
+            <Route path="/addnewevent" element={<AddEventForm />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </div>

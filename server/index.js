@@ -12,6 +12,7 @@ const bcrypt = require("bcrypt");
 const FormDataModel = require("./models/FormData");
 const Post = require("./models/createPostFormData");
 const Instrument = require("./models/InstrumentModel");
+const Event = require("./models/eventModel");
 
 const app = express();
 const PORT = 5000;
@@ -54,49 +55,14 @@ app.use(express.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads")); // Serve uploaded files statically
 
-mongoose.connect("mongodb://127.0.0.1:27017/userAuth", {
+mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-// Register User
-app.post("/register", async (req, res) => {
-  try {
-    const {
-      role,
-      firstName,
-      lastName,
-      email,
-      password,
-      country,
-      state,
-      description,
-    } = req.body;
+// =========================================================================================================================
 
-    const existingUser = await FormDataModel.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new FormDataModel({
-      userId: new mongoose.Types.ObjectId().toString(),
-      role,
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      country,
-      state,
-      description: role === "Artist" ? description : "",
-    });
-
-    await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// =========================================================================================================================
 
 // Login User
 app.post("/login", async (req, res) => {
@@ -119,55 +85,64 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Update User Info
-app.put("/user", async (req, res) => {
+// =========================================================================================================================
+app.post("/addevent", upload.single("image"), async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const userId = decoded.userId;
-
     const {
-      firstName,
-      lastName,
-      email,
-      password,
-      country,
-      state,
+      name,
+      genre,
+      host,
+      date,
       description,
+      location,
+      userId,
+      slots,
+      link,
+      bookeduser = [], // Default to an empty array if not provided
     } = req.body;
 
-    const updateData = {
-      firstName,
-      lastName,
-      email,
-      country,
-      state,
+    // Validate required fields
+    if (
+      !name ||
+      !genre ||
+      !host ||
+      !date ||
+      !description ||
+      !location ||
+      !userId ||
+      !slots ||
+      !link
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
+    }
+
+    // Create the event object
+    const newEvent = new Event({
+      name,
+      genre,
+      host,
+      date,
       description,
-    };
+      location,
+      userId,
+      slots,
+      bookeduser,
+      link,
+      image: req.file ? req.file.filename : null, // Handle the image upload
+    });
 
-    // Hash password if it's being changed
-    if (password) {
-      updateData.password = await bcrypt.hash(password, 10);
-    }
-
-    const updatedUser = await FormDataModel.findOneAndUpdate(
-      { userId },
-      updateData,
-      { new: true }
-    ).select("-password");
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json({ message: "Profile updated", user: updatedUser });
+    // Save the new event to the database
+    await newEvent.save();
+    res.status(201).json({ success: true, event: newEvent });
   } catch (error) {
-    console.error("Update error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error adding event:", error);
+    res.status(500).json({ success: false, message: "Failed to add event" });
   }
 });
+
+// =========================================================================================================================
 
 // Get Logged-in User Info
 app.get("/user", async (req, res) => {
@@ -187,6 +162,7 @@ app.get("/user", async (req, res) => {
   }
 });
 
+// =========================================================================================================================
 // Create Post
 app.post("/posts", async (req, res) => {
   const { token, message } = req.body;
@@ -281,6 +257,8 @@ app.delete("/posts/:id", async (req, res) => {
   }
 });
 
+// =========================================================================================================================
+
 app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
   try {
     const {
@@ -295,13 +273,14 @@ app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
       rentedDate,
       expectedReturnDate,
       renterId,
+      category, // New field
     } = req.body;
 
     const newInstrument = new Instrument({
       instrumentName,
       instrumentDescription,
       amount,
-      image: req.file ? req.file.filename : "", // Store the filename of the uploaded image
+      image: req.file ? req.file.filename : "",
       userId,
       userName,
       address,
@@ -310,6 +289,7 @@ app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
       rentedDate,
       expectedReturnDate,
       renterId,
+      category, // Save category
     });
 
     await newInstrument.save();
@@ -445,6 +425,137 @@ app.put("/instruments/return/:id", async (req, res) => {
   } catch (error) {
     console.error("Error updating instrument status:", error);
     res.status(500).json({ error: "Unable to return the instrument." });
+  }
+});
+
+// =========================================================================================================================
+
+app.post("/addevent", upload.single("image"), async (req, res) => {
+  try {
+    const {
+      name,
+      genre,
+      host,
+      date,
+      description,
+      location,
+      userId,
+      slots,
+      link,
+    } = req.body;
+
+    const newEvent = new Event({
+      name,
+      genre,
+      host,
+      date,
+      description,
+      location,
+      userId,
+      slots,
+      link,
+      image: req.file ? req.file.filename : null,
+      bookeduser: [],
+    });
+
+    await newEvent.save();
+    res.status(201).json({ success: true, event: newEvent });
+  } catch (error) {
+    console.error("Error adding event:", error); // ✅ This line is okay
+    res.status(500).json({ success: false, message: "Failed to add event" });
+  }
+});
+
+// Register User
+app.post("/register", async (req, res) => {
+  try {
+    const {
+      role,
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      address,
+      country,
+      state,
+      description,
+    } = req.body;
+
+    const existingUser = await FormDataModel.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new FormDataModel({
+      userId: new mongoose.Types.ObjectId().toString(),
+      role,
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      phone,
+      address,
+      country,
+      state,
+      description: role === "Artist" ? description : "",
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update User Info
+app.put("/user", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.userId;
+
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      country,
+      state,
+      description,
+    } = req.body;
+
+    const updateData = {
+      firstName,
+      lastName,
+      email,
+      country,
+      state,
+      description,
+    };
+
+    // Hash password if it's being changed
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    const updatedUser = await FormDataModel.findOneAndUpdate(
+      { userId },
+      updateData,
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Profile updated", user: updatedUser });
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
