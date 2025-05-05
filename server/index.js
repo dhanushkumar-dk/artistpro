@@ -55,10 +55,14 @@ app.use(express.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads")); // Serve uploaded files statically
 
-mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
+mongoose.connect(
+  "mongodb+srv://admin:dhanush123@cluster0.se9w4fs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 // =========================================================================================================================
 
@@ -139,6 +143,30 @@ app.post("/addevent", upload.single("image"), async (req, res) => {
   } catch (error) {
     console.error("Error adding event:", error);
     res.status(500).json({ success: false, message: "Failed to add event" });
+  }
+});
+
+// GET /eventsdata - Fetch all events
+// Fetch all events with populated userId and bookeduser references
+app.get("/eventsdata", async (req, res) => {
+  try {
+    // Fetch all events and populate the userId and bookeduser fields
+    const events = await Event.find(); // populate bookeduser (e.g., name, email)
+
+    if (!events || events.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No events found" });
+    }
+
+    // Send back the events data
+    res.status(200).json({ success: true, events });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({
+      success: false,
+      message: `Failed to fetch events: ${error.message}`,
+    });
   }
 });
 
