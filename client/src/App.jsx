@@ -27,6 +27,8 @@ import MyTickets from "./components/ProfilePage/MyTickets";
 import Footer from "./components/Footers/Footer";
 import PageNotFound from "./components/PageNotFound";
 
+import EventDetails from "./pages/EventDetails"; // import
+
 // Add inside JSX
 <ToastContainer position="top-center" autoClose={3000} />;
 const App = () => {
@@ -46,6 +48,8 @@ const App = () => {
             <Route path="/events" element={<Events />} />
             <Route path="/events/addnewevent" element={<AddEventForm />} />
             <Route path="/listEvents" element={<EventList />} />
+
+            <Route path="/events/:id" element={<EventDetails />} />
 
             <Route path="/instruments" element={<InstrumentsComponent />} />
             <Route path="/MyInstruments" element={<MyInstruments />} />

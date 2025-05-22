@@ -66,7 +66,48 @@ mongoose.connect(
 
 // =========================================================================================================================
 
-// =========================================================================================================================
+// Register User
+app.post("/register", async (req, res) => {
+  try {
+    const {
+      role,
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      address,
+      country,
+      state,
+      description,
+    } = req.body;
+
+    const existingUser = await FormDataModel.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new FormDataModel({
+      userId: new mongoose.Types.ObjectId().toString(),
+      role,
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      phone,
+      address,
+      country,
+      state,
+      description: role === "Artist" ? description : "",
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 // Login User
 app.post("/login", async (req, res) => {
@@ -85,6 +126,56 @@ app.post("/login", async (req, res) => {
 
     res.json({ token });
   } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update User Info
+app.put("/user", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.userId;
+
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      country,
+      state,
+      description,
+    } = req.body;
+
+    const updateData = {
+      firstName,
+      lastName,
+      email,
+      country,
+      state,
+      description,
+    };
+
+    // Hash password if it's being changed
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    const updatedUser = await FormDataModel.findOneAndUpdate(
+      { userId },
+      updateData,
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Profile updated", user: updatedUser });
+  } catch (error) {
+    console.error("Update error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -170,6 +261,91 @@ app.get("/eventsdata", async (req, res) => {
   }
 });
 
+// =========================================================================================================================
+
+// Get a single event by ID
+app.get("/eventsdata/:id", async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    // Find event by ID
+    const event = await Event.findById(eventId); // You can also populate fields if needed
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      event,
+    });
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    res.status(500).json({
+      success: false,
+      message: `Failed to fetch event: ${error.message}`,
+    });
+  }
+});
+
+// =========================================================================================================================
+app.get("/usernames", async (req, res) => {
+  try {
+    // Fetch all users and extract only firstName and lastName (or combine them as a full name)
+    const users = await FormDataModel.find().select("firstName lastName");
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    // Map the users to an array of full names
+    const usernames = users.map((user) => `${user.firstName} ${user.lastName}`);
+
+    res.json(usernames);
+  } catch (error) {
+    console.error("Error fetching usernames:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+// =========================================================================================================================
+// =========================================================================================================================
+// =========================================================================================================================
+// RSVP to an event
+app.post("/eventsdata/:id/rsvp", async (req, res) => {
+  const eventId = req.params.id;
+  const { userId } = req.body;
+
+  try {
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    }
+
+    // Check if user already RSVP'd
+    if (event.bookeduser.includes(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User already RSVP'd" });
+    }
+
+    event.bookeduser.push(userId);
+    await event.save();
+
+    res.status(200).json({ success: true, message: "RSVP successful", event });
+  } catch (error) {
+    console.error("Error RSVPing:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// =========================================================================================================================
+// =========================================================================================================================
 // =========================================================================================================================
 
 // Get Logged-in User Info
@@ -457,134 +633,5 @@ app.put("/instruments/return/:id", async (req, res) => {
 });
 
 // =========================================================================================================================
-
-app.post("/addevent", upload.single("image"), async (req, res) => {
-  try {
-    const {
-      name,
-      genre,
-      host,
-      date,
-      description,
-      location,
-      userId,
-      slots,
-      link,
-    } = req.body;
-
-    const newEvent = new Event({
-      name,
-      genre,
-      host,
-      date,
-      description,
-      location,
-      userId,
-      slots,
-      link,
-      image: req.file ? req.file.filename : null,
-      bookeduser: [],
-    });
-
-    await newEvent.save();
-    res.status(201).json({ success: true, event: newEvent });
-  } catch (error) {
-    console.error("Error adding event:", error); // ✅ This line is okay
-    res.status(500).json({ success: false, message: "Failed to add event" });
-  }
-});
-
-// Register User
-app.post("/register", async (req, res) => {
-  try {
-    const {
-      role,
-      firstName,
-      lastName,
-      email,
-      password,
-      phone,
-      address,
-      country,
-      state,
-      description,
-    } = req.body;
-
-    const existingUser = await FormDataModel.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new FormDataModel({
-      userId: new mongoose.Types.ObjectId().toString(),
-      role,
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      phone,
-      address,
-      country,
-      state,
-      description: role === "Artist" ? description : "",
-    });
-
-    await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// Update User Info
-app.put("/user", async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const userId = decoded.userId;
-
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      country,
-      state,
-      description,
-    } = req.body;
-
-    const updateData = {
-      firstName,
-      lastName,
-      email,
-      country,
-      state,
-      description,
-    };
-
-    // Hash password if it's being changed
-    if (password) {
-      updateData.password = await bcrypt.hash(password, 10);
-    }
-
-    const updatedUser = await FormDataModel.findOneAndUpdate(
-      { userId },
-      updateData,
-      { new: true }
-    ).select("-password");
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json({ message: "Profile updated", user: updatedUser });
-  } catch (error) {
-    console.error("Update error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

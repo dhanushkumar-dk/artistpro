@@ -222,7 +222,7 @@ const InstrumentsComponent = () => {
   };
 
   return (
-    <div>
+    <div className="bg-light">
       <HeaderBanner />
       <Navbar />
 

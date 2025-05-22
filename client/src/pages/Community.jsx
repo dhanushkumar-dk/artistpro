@@ -23,9 +23,16 @@ const Community = () => {
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/posts").then((res) => {
-      setPosts(res.data);
-    });
+    const fetchPosts = () => {
+      axios.get("http://localhost:5000/posts").then((res) => {
+        setPosts(res.data);
+      });
+    };
+
+    fetchPosts();
+    const interval = setInterval(fetchPosts, 3000); // Fixed interval to 3 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const createPost = () => {
@@ -78,12 +85,12 @@ const Community = () => {
         return postDate >= oneMonthAgo;
       }
 
-      return true; // "all"
+      return true;
     });
   };
 
   return (
-    <div>
+    <div className="bg-light">
       <HeaderBanner />
       <Navbar />
       <div className="container py-4">
@@ -93,38 +100,23 @@ const Community = () => {
 
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div className="btn-group">
-            <button
-              className={`btn btn-outline-primary ${
-                filter === "all" ? "active" : ""
-              }`}
-              onClick={() => setFilter("all")}
-            >
-              All
-            </button>
-            <button
-              className={`btn btn-outline-primary ${
-                filter === "today" ? "active" : ""
-              }`}
-              onClick={() => setFilter("today")}
-            >
-              Today
-            </button>
-            <button
-              className={`btn btn-outline-primary ${
-                filter === "week" ? "active" : ""
-              }`}
-              onClick={() => setFilter("week")}
-            >
-              This Week
-            </button>
-            <button
-              className={`btn btn-outline-primary ${
-                filter === "month" ? "active" : ""
-              }`}
-              onClick={() => setFilter("month")}
-            >
-              This Month
-            </button>
+            {["all", "today", "week", "month"].map((timeframe) => (
+              <button
+                key={timeframe}
+                className={`btn btn-outline-primary ${
+                  filter === timeframe ? "active" : ""
+                }`}
+                onClick={() => setFilter(timeframe)}
+              >
+                {timeframe === "all"
+                  ? "All"
+                  : timeframe === "today"
+                  ? "Today"
+                  : timeframe === "week"
+                  ? "This Week"
+                  : "This Month"}
+              </button>
+            ))}
           </div>
 
           <button
@@ -146,7 +138,8 @@ const Community = () => {
           <div className="mb-4">
             <textarea
               className="form-control mb-2"
-              placeholder="What's on your mind?"
+              placeholder={`What's on your mind?\n(Use line breaks to structure your post)`}
+              rows={6}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
@@ -176,7 +169,6 @@ const Community = () => {
 const DisplayPost = ({ post, handleLike, loggedInUser, setPosts, posts }) => {
   const isLiked = loggedInUser && post.likedUsers.includes(loggedInUser.userId);
 
-  // Check if the logged-in user is the owner of the post
   const isPostOwner =
     loggedInUser && post.userId.toString() === loggedInUser.userId;
 
@@ -187,12 +179,30 @@ const DisplayPost = ({ post, handleLike, loggedInUser, setPosts, posts }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
-        // Remove the post from the state after deletion
         setPosts(posts.filter((p) => p._id !== post._id));
       })
       .catch((err) => {
         console.error("Error deleting post:", err);
       });
+  };
+
+  // Function to convert URLs into clickable links
+  const renderMessageWithLinks = (text) => {
+    return text.split(/(https?:\/\/[^\s]+)/g).map((part, index) =>
+      part.match(/^https?:\/\/[^\s]+$/) ? (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary text-decoration-underline"
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
   };
 
   return (
@@ -221,8 +231,13 @@ const DisplayPost = ({ post, handleLike, loggedInUser, setPosts, posts }) => {
           </div>
           <strong>{post.userName}</strong>
         </div>
-        <p>{post.message}</p>
-        <div className="d-flex justify-content-between text-muted">
+
+        {/* Render message with line breaks and links */}
+        <div style={{ whiteSpace: "pre-wrap" }}>
+          {renderMessageWithLinks(post.message)}
+        </div>
+
+        <div className="d-flex justify-content-between text-muted mt-2">
           <small>{new Date(post.dateTime).toLocaleDateString()}</small>
           <div className="d-flex align-items-center">
             <button

@@ -1,0 +1,19 @@
+i want to create a well structured scheme for my music band artist collaboration hub project and the following is the features
+
+
+use db:
+{user_id, user_role, fname, lname, mail, password, country, state, instruments_array, description}
+
+
+event db:
+{event_id, image_url, artistname, eventname, month, date, time, bookingsCount,  location}
+
+rental db:
+{instrument_id, owner_user_id, user_name, instrument_name, rental_amount, location, status:(available/not in stock)}
+
+community db: news, feeds and updates
+{user_id, user_name, message, likes_count}
+
+learning db: just same as community db
+
+mytickets db: {user_id, user_name, event_id, } and structure more as you go
