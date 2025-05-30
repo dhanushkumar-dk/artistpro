@@ -1,6 +1,8 @@
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
+const { Server } = require("socket.io");
+const http = require("http");
 
 const path = require("path");
 
@@ -55,6 +57,29 @@ app.use(express.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads")); // Serve uploaded files statically
 
+// Create HTTP server
+const server = http.createServer(app);
+
+// Create Socket.IO server
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000", // Frontend origin
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  },
+});
+
+// Optional: log connections
+io.on("connection", (socket) => {
+  console.log("Client connected");
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+// Make `io` accessible in routes
+app.set("io", io);
+
 // mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
 mongoose.connect(
   "mongodb+srv://admin:dhanush123@cluster0.se9w4fs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
@@ -63,8 +88,6 @@ mongoose.connect(
     useUnifiedTopology: true,
   }
 );
-
-// =========================================================================================================================
 
 // Register User
 app.post("/register", async (req, res) => {
@@ -130,6 +153,25 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/usernames", async (req, res) => {
+  try {
+    // Fetch all users and extract only firstName and lastName (or combine them as a full name)
+    const users = await FormDataModel.find().select("firstName lastName");
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    // Map the users to an array of full names
+    const usernames = users.map((user) => `${user.firstName} ${user.lastName}`);
+
+    res.json(usernames);
+  } catch (error) {
+    console.error("Error fetching usernames:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Update User Info
 app.put("/user", async (req, res) => {
   try {
@@ -180,7 +222,6 @@ app.put("/user", async (req, res) => {
   }
 });
 
-// =========================================================================================================================
 app.post("/addevent", upload.single("image"), async (req, res) => {
   try {
     const {
@@ -291,28 +332,6 @@ app.get("/eventsdata/:id", async (req, res) => {
   }
 });
 
-// =========================================================================================================================
-app.get("/usernames", async (req, res) => {
-  try {
-    // Fetch all users and extract only firstName and lastName (or combine them as a full name)
-    const users = await FormDataModel.find().select("firstName lastName");
-
-    if (!users || users.length === 0) {
-      return res.status(404).json({ message: "No users found" });
-    }
-
-    // Map the users to an array of full names
-    const usernames = users.map((user) => `${user.firstName} ${user.lastName}`);
-
-    res.json(usernames);
-  } catch (error) {
-    console.error("Error fetching usernames:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-// =========================================================================================================================
-// =========================================================================================================================
-// =========================================================================================================================
 // RSVP to an event
 app.post("/eventsdata/:id/rsvp", async (req, res) => {
   const eventId = req.params.id;
@@ -344,10 +363,6 @@ app.post("/eventsdata/:id/rsvp", async (req, res) => {
   }
 });
 
-// =========================================================================================================================
-// =========================================================================================================================
-// =========================================================================================================================
-
 // Get Logged-in User Info
 app.get("/user", async (req, res) => {
   try {
@@ -366,8 +381,7 @@ app.get("/user", async (req, res) => {
   }
 });
 
-// =========================================================================================================================
-// Create Post
+// Create Post with Socket.IO emit
 app.post("/posts", async (req, res) => {
   const { token, message } = req.body;
 
@@ -387,6 +401,11 @@ app.post("/posts", async (req, res) => {
     });
 
     await newPost.save();
+
+    // Emit new post to all connected clients
+    const io = req.app.get("io");
+    io.emit("newPost", newPost);
+
     res.status(201).json({ post: newPost });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -403,7 +422,7 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-// Toggle Like/Dislike
+// Like/Unlike a post
 app.put("/posts/like/:id", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "Unauthorized" });
@@ -428,6 +447,11 @@ app.put("/posts/like/:id", async (req, res) => {
     }
 
     await post.save();
+
+    // Emit the updated post to clients
+    const io = req.app.get("io");
+    io.emit("updatePost", post);
+
     res.json({ post });
   } catch (err) {
     console.error(err);
@@ -451,8 +475,11 @@ app.delete("/posts/:id", async (req, res) => {
       return res.status(403).json({ message: "You cannot delete this post" });
     }
 
-    // Delete the post using the correct method
     await Post.findByIdAndDelete(post._id);
+
+    // Emit the post deletion event with the post ID
+    const io = req.app.get("io");
+    io.emit("deletePost", post._id);
 
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
@@ -460,8 +487,6 @@ app.delete("/posts/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-// =========================================================================================================================
 
 app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
   try {
@@ -632,6 +657,4 @@ app.put("/instruments/return/:id", async (req, res) => {
   }
 });
 
-// =========================================================================================================================
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

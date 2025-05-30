@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 import HeaderBanner from "../components/Banners/HeaderBanner";
 import Navbar from "../components/Navbar";
 
@@ -9,6 +10,7 @@ const Community = () => {
   const [showForm, setShowForm] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -23,27 +25,52 @@ const Community = () => {
   }, []);
 
   useEffect(() => {
-    const fetchPosts = () => {
-      axios.get("http://localhost:5000/posts").then((res) => {
-        setPosts(res.data);
-      });
+    const newSocket = io("http://localhost:5000");
+    setSocket(newSocket);
+
+    // Initial fetch
+    axios.get("http://localhost:5000/posts").then((res) => {
+      setPosts(res.data);
+    });
+
+    return () => newSocket.close();
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewPost = (post) => {
+      setPosts((prev) => [post, ...prev]);
     };
 
-    fetchPosts();
-    const interval = setInterval(fetchPosts, 3000); // Fixed interval to 3 seconds
+    const handleDeletePost = (postId) => {
+      setPosts((prev) => prev.filter((p) => p._id !== postId));
+    };
 
-    return () => clearInterval(interval);
-  }, []);
+    const handleUpdatePost = (updatedPost) => {
+      setPosts((prev) =>
+        prev.map((p) => (p._id === updatedPost._id ? updatedPost : p))
+      );
+    };
+
+    socket.on("newPost", handleNewPost);
+    socket.on("deletePost", handleDeletePost);
+    socket.on("updatePost", handleUpdatePost);
+
+    return () => {
+      socket.off("newPost", handleNewPost);
+      socket.off("deletePost", handleDeletePost);
+      socket.off("updatePost", handleUpdatePost);
+    };
+  }, [socket]);
 
   const createPost = () => {
     const token = localStorage.getItem("token");
-    axios
-      .post("http://localhost:5000/posts", { message, token })
-      .then((res) => {
-        setPosts([res.data.post, ...posts]);
-        setMessage("");
-        setShowForm(false);
-      });
+    axios.post("http://localhost:5000/posts", { message, token }).then(() => {
+      setMessage("");
+      setShowForm(false);
+      // No need to update posts manually — server will emit via socket
+    });
   };
 
   const handleLike = (postId) => {
@@ -56,10 +83,8 @@ const Community = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       )
-      .then((res) => {
-        setPosts(
-          posts.map((post) => (post._id === postId ? res.data.post : post))
-        );
+      .catch((err) => {
+        console.error("Error liking post:", err);
       });
   };
 
@@ -168,7 +193,6 @@ const Community = () => {
 
 const DisplayPost = ({ post, handleLike, loggedInUser, setPosts, posts }) => {
   const isLiked = loggedInUser && post.likedUsers.includes(loggedInUser.userId);
-
   const isPostOwner =
     loggedInUser && post.userId.toString() === loggedInUser.userId;
 
@@ -178,15 +202,11 @@ const DisplayPost = ({ post, handleLike, loggedInUser, setPosts, posts }) => {
       .delete(`http://localhost:5000/posts/${post._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then(() => {
-        setPosts(posts.filter((p) => p._id !== post._id));
-      })
       .catch((err) => {
         console.error("Error deleting post:", err);
       });
   };
 
-  // Function to convert URLs into clickable links
   const renderMessageWithLinks = (text) => {
     return text.split(/(https?:\/\/[^\s]+)/g).map((part, index) =>
       part.match(/^https?:\/\/[^\s]+$/) ? (
@@ -232,7 +252,6 @@ const DisplayPost = ({ post, handleLike, loggedInUser, setPosts, posts }) => {
           <strong>{post.userName}</strong>
         </div>
 
-        {/* Render message with line breaks and links */}
         <div style={{ whiteSpace: "pre-wrap" }}>
           {renderMessageWithLinks(post.message)}
         </div>
