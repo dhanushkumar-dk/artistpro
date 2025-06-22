@@ -65,7 +65,7 @@ const HeaderBanner = () => {
 
   return (
     <div
-      className="d-flex justify-content-between align-items-center bg-primary text-white p-3"
+      className="d-flex justify-content-between align-items-center bg-dark text-white p-3"
       style={{ position: "relative" }}
     >
       {/* Title in the center */}

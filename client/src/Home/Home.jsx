@@ -164,7 +164,7 @@ const Home = () => {
                   <ul class="list-unstyled mb-0">
                     <li>
                       <a
-                        href="./events.html#events_card_display"
+                        href="./events#event_container"
                         class="text-decoration-none"
                       >
                         <span class="text-decoration-none">

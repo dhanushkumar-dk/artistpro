@@ -163,7 +163,7 @@ const MyInstruments = () => {
                       className="btn btn-warning btn-sm ml-2"
                       onClick={() => handleReturnInstrument(instrument._id)}
                     >
-                      Return and Mark as Available
+                      Return
                     </button>
                   </td>
                   <td className="text-center">

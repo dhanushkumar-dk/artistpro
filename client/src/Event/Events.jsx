@@ -156,7 +156,7 @@ const Events = () => {
       </div>
 
       {/* Event List */}
-      <div className="container my-4 bg-white">
+      <div className="container my-4 bg-white" id="event_container">
         {loading ? (
           <div>Loading...</div>
         ) : error ? (

@@ -275,11 +275,22 @@ const InstrumentsComponent = () => {
                         name="expectedReturnDate"
                         className="form-control"
                         required
+                        min={
+                          rentForm.rentedDate
+                            ? new Date(
+                                new Date(rentForm.rentedDate).getTime() +
+                                  86400000
+                              )
+                                .toISOString()
+                                .split("T")[0]
+                            : new Date().toISOString().split("T")[0]
+                        }
                         value={rentForm.expectedReturnDate}
                         onChange={handleRentChange}
                       />
                     </div>
                   </div>
+
                   <div className="modal-footer">
                     <button type="submit" className="btn btn-success">
                       Confirm Rent
