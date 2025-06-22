@@ -1,33 +1,30 @@
-import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Login from "./pages/loginreg/Login";
-import Register from "./pages/loginreg/Register";
+import LandingPage from "./Home/Home";
 
-import LandingPage from "./pages/Home";
+import Profile from "./Profile/Profile";
+import MyTickets from "./Profile/Components/MyTickets";
 
-import Events from "./pages/Events";
-import EventList from "./components/listEvents";
-import AddEventForm from "./pages/AddEventForm";
+import Login from "./LoginReg/Login";
+import Register from "./LoginReg/Register";
 
-import MyInstruments from "./components/ProfilePage/MyInstrument";
-import InstrumentDetail from "./pages/displayInstrument"; // Import the new InstrumentDetail page
-import InstrumentsComponent from "./pages/Instruments";
+import Events from "./Event/Events";
+import EventList from "./Event/listEvents";
+import AddEventForm from "./Event//Form/AddEventForm";
+import EventDetails from "./Event/EventDetails"; // import
 
-import Community from "./pages/Community";
-import Chatbot from "./pages/Chatbot";
-import Learning from "./pages/Learning";
+import MyInstruments from "./Profile/Components/MyInstrument";
+import InstrumentDetail from "./Instrument/displayInstrument"; // Import the new InstrumentDetail page
+import InstrumentsComponent from "./Instrument/Instruments";
 
-import Profile from "./components/ProfilePage/Profile";
-import MyTickets from "./components/ProfilePage/MyTickets";
+import Community from "./Community/Community";
+import Chatbot from "./Chatbot/Chatbot";
+import Learning from "./Others/Learning";
 
-import Footer from "./components/Footers/Footer";
-import PageNotFound from "./components/PageNotFound";
-
-import EventDetails from "./pages/EventDetails"; // import
+import PageNotFound from "./Others/components/PageNotFound";
+import Footer from "./Others/Footers/Footer";
 
 // Add inside JSX
 <ToastContainer position="top-center" autoClose={3000} />;
@@ -41,6 +38,8 @@ const App = () => {
             <Route path="/home" element={<LandingPage />} />
 
             <Route path="/profile" element={<Profile />} />
+            <Route path="/my-tickets" element={<MyTickets />} />
+            <Route path="/MyInstruments" element={<MyInstruments />} />
 
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -52,13 +51,11 @@ const App = () => {
             <Route path="/events/:id" element={<EventDetails />} />
 
             <Route path="/instruments" element={<InstrumentsComponent />} />
-            <Route path="/MyInstruments" element={<MyInstruments />} />
             <Route path="/instrument/:id" element={<InstrumentDetail />} />
 
             <Route path="/community" element={<Community />} />
             <Route path="/learning" element={<Learning />} />
 
-            <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/chatbot" element={<Chatbot />} />
 
             <Route path="*" element={<PageNotFound />} />
