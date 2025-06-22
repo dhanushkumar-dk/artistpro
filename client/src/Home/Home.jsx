@@ -273,7 +273,7 @@ const Home = () => {
                   <div class="h-100 shadow-sm d-flex flex-column align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center justify-content-center py-3">
                       <a
-                        href="./events.html#card"
+                        href="./events#event_container"
                         class="text-decoration-none text-dark"
                       >
                         <div
@@ -315,7 +315,7 @@ const Home = () => {
                   <ul class="list-unstyled mb-0">
                     <li>
                       <a
-                        href="./events.html#events_card_display"
+                        href="./events#event_container"
                         class="text-decoration-none"
                       >
                         <span class="text-decoration-none">
@@ -411,11 +411,11 @@ const Home = () => {
                   <div class="h-100 shadow-sm d-flex flex-column align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center justify-content-center py-3">
                       <a
-                        href="./events.html#card"
-                        class="text-decoration-none text-dark"
+                        href="./events#event_container"
+                        className="text-decoration-none text-dark"
                       >
                         <div
-                          class="rounded-circle shadow d-flex align-items-center justify-content-center mb-2"
+                          className="rounded-circle shadow d-flex align-items-center justify-content-center mb-2"
                           style={{
                             width: "40px",
                             height: "40px",
@@ -424,7 +424,7 @@ const Home = () => {
                         >
                           &rarr;
                         </div>
-                        <p class="mb-0 fw-semibold">View All</p>
+                        <p className="mb-0 fw-semibold">View All</p>
                       </a>
                     </div>
                   </div>

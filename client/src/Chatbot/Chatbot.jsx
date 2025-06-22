@@ -104,7 +104,7 @@ const Chatbot = () => {
                 <div
                   className={`p-3 shadow-sm ${
                     msg.sender === "user" ? "bg-success text-white" : "bg-white"
-                  } rounded-pill position-relative`}
+                  } rounded-1 position-relative`}
                   style={{ maxWidth: "75%", wordBreak: "break-word" }}
                 >
                   {msg.text}

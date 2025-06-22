@@ -4,6 +4,7 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import HeaderBanner from "../Others/Banners/HeaderBanner";
 import Navbar from "../Others/components/Navbar";
+import InstrumentCard from "./InstrumentCard";
 
 const InstrumentsComponent = () => {
   const [instruments, setInstruments] = useState([]);
@@ -485,58 +486,15 @@ const InstrumentsComponent = () => {
             </div>
           </div>
         ) : (
-          <div className="row row-cols-1 row-cols-md-3 g-4">
-            {instruments.map((instrument) =>
-              user && user.userId !== instrument.userId ? (
-                <div key={instrument._id} className="col">
-                  <div className="card h-100 shadow-sm">
-                    {instrument.image && (
-                      <img
-                        src={`http://localhost:5000/uploads/${instrument.image}`}
-                        className="card-img-top"
-                        alt={instrument.instrumentName}
-                        style={{ objectFit: "cover", height: "200px" }}
-                      />
-                    )}
-                    <div className="card-body">
-                      <h5 className="card-title">
-                        {instrument.instrumentName}
-                      </h5>
-                      <p className="card-text">
-                        {instrument.instrumentDescription}
-                      </p>
-                      <p className="card-text">
-                        <strong>Amount:</strong> ${instrument.amount}
-                      </p>
-                      <div className="d-flex justify-content-between">
-                        <a
-                          href={`/instrument/${instrument._id}`}
-                          className="btn btn-primary"
-                        >
-                          View Details
-                        </a>
-
-                        {/* {instrument.status === "available" && (
-                        )} */}
-                        <div className="d-flex justify-content-between">
-                          <button
-                            className="btn btn-warning"
-                            onClick={() =>
-                              handleOpenRentModal(
-                                instrument._id,
-                                instrument.userId
-                              )
-                            }
-                          >
-                            Rent
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null
-            )}
+          <div className="row">
+            {instruments.map((instrument) => (
+              <InstrumentCard
+                key={instrument._id}
+                instrument={instrument}
+                userId={user?.userId}
+                handleOpenRentModal={handleOpenRentModal}
+              />
+            ))}
           </div>
         )}
       </div>

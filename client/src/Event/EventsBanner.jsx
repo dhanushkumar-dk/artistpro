@@ -34,7 +34,7 @@ const EventsBanner = () => {
         </div>
 
         <svg
-          width="600"
+          className="col-6 col-sm-6 col-md-6 m-0 p-0 "
           height="2"
           viewBox="0 0 600 2"
           fill="none"

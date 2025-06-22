@@ -32,7 +32,7 @@ const EventCard = ({ event }) => {
   const remainingSlots = event.slots - event.bookeduser.length;
 
   return (
-    <div className="col">
+    <div className="col-12 col-sm-6 col-md-4 col-lg-3 m-0 p-1 p-sm-2 p-md-3 p-lg-4">
       <div className="card shadow-lg rounded-3 border-dark">
         {/* Image */}
         <div
@@ -40,6 +40,8 @@ const EventCard = ({ event }) => {
             width: "100%",
             paddingTop: "100%",
             position: "relative",
+            boxSizing: "border-box",
+            overflow: "hidden",
           }}
         >
           <img
@@ -50,91 +52,77 @@ const EventCard = ({ event }) => {
               position: "absolute",
               top: 0,
               left: 0,
-              width: "100%",
-              height: "100%",
               objectFit: "cover",
             }}
           />
         </div>
-        <hr className="my-2 border border-dark border-2 opacity-50" />
+        <hr className="m-0 p-0 border border-dark border-2 opacity-50" />
 
         {/* Event Info */}
-        <div className="card-body p-2">
-          <h6 className="text-center fw-bold">{event.name}</h6>
+        <div className="card-body p-2 col-12" style={{ fontSize: "0.6rem" }}>
+          <h6 className="fw-bold m-0 p-0">{event.name}</h6>
 
-          <table className="table table-borderless table-sm mb-2">
-            <tbody className="small">
-              <tr>
-                <td className="text-muted fw-bold">Host</td>
-                <td>{event.host}</td>
-                <td className="text-muted fw-bold">Genre</td>
-                <td>{event.genre}</td>
-              </tr>
-              <tr>
-                <td className="text-muted fw-bold">Location</td>
-                <td>{event.location}</td>
-                <td className="text-muted fw-bold">Date</td>
-                <td>{new Date(event.date).toLocaleDateString()}</td>
-              </tr>
-              <tr>
-                <td className="text-muted fw-bold">Remaining</td>
-                <td>{remainingSlots}</td>
-                <td colSpan="2">
-                  {/* <button
-                    className="btn btn-sm btn-success w-100"
-                    onClick={() => {
-                      alert(`${userData.userId} \n ${userData.firstName}`);
-                    }}
-                  >
-                    RSVP
-                  </button> */}
-                  <button
-                    className="btn btn-sm btn-success w-100"
-                    onClick={() => {
-                      const token = localStorage.getItem("token");
-                      if (!token || !userData.userId) {
-                        alert("Please log in to RSVP.");
-                        return;
+          {/* Details */}
+          <div className="row">
+            <div className="col-6 col-md-6">
+              <p className="fw-bold p-0 m-0">Host:</p>
+              <p className="fw-bold p-0 m-0">Location:</p>
+              <p className="fw-bold p-0 m-0">Remaining:</p>
+              <p className="fw-bold p-0 m-0">Genre:</p>
+              <p className="fw-bold p-0 m-0">Date:</p>
+
+              <button
+                className="btn btn-sm btn-success col-6 col-sm-8 p-0 fw-bold"
+                style={{ fontSize: "0.6rem" }}
+                onClick={() => {
+                  const token = localStorage.getItem("token");
+                  if (!token || !userData.userId) {
+                    alert("Please log in to RSVP.");
+                    return;
+                  }
+
+                  axios
+                    .post(
+                      `http://localhost:5000/eventsdata/${event._id}/rsvp`,
+                      { userId: userData.userId },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
                       }
-
-                      axios
-                        .post(
-                          `http://localhost:5000/eventsdata/${event._id}/rsvp`,
-                          { userId: userData.userId },
-                          {
-                            headers: {
-                              Authorization: `Bearer ${token}`,
-                            },
-                          }
-                        )
-                        .then((res) => {
-                          alert("RSVP successful!");
-                          // optionally refresh or update event state
-                        })
-                        .catch((err) => {
-                          alert(
-                            "RSVP failed: " + err.response?.data?.message ||
-                              err.message
-                          );
-                        });
-                    }}
-                  >
-                    RSVP
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td colSpan="4">
-                  <button
-                    onClick={() => navigate(`/events/${event._id}`)}
-                    className="btn btn-sm btn-primary w-100 mt-1"
-                  >
-                    View Details
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                    )
+                    .then((res) => {
+                      alert("RSVP successful!");
+                      // optionally refresh or update event state
+                    })
+                    .catch((err) => {
+                      alert(
+                        "RSVP failed: " + err.response?.data?.message ||
+                          err.message
+                      );
+                    });
+                }}
+              >
+                RSVP
+              </button>
+            </div>
+            <div className="col-6 col-md-6">
+              <p className="p-0 m-0">{event.host}</p>
+              <p className="p-0 m-0">{event.location}</p>
+              <p className="p-0 m-0">{remainingSlots}</p>
+              <p className="p-0 m-0">{event.genre}</p>
+              <p className="p-0 m-0">
+                {new Date(event.date).toLocaleDateString()}
+              </p>{" "}
+              <button
+                onClick={() => navigate(`/events/${event._id}`)}
+                className="btn btn-sm btn-primary col-6 col-sm-8 s p-0 fw-bold"
+                style={{ fontSize: "0.6rem" }}
+              >
+                VIEW
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

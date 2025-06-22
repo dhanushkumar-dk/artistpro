@@ -149,20 +149,20 @@ const Events = () => {
       )}
 
       {/* Add Event Button */}
-      <div className="text-center mb-4">
+      <div className="text-center my-5">
         <button className="btn btn-success" onClick={handleAddEventClick}>
           Add New Event
         </button>
       </div>
 
       {/* Event List */}
-      <div className="container my-4 bg-white" id="event_container">
+      <div className=" my-4 bg-white" id="event_container">
         {loading ? (
           <div>Loading...</div>
         ) : error ? (
           <div>{error}</div>
         ) : (
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+          <div className="d-flex flex-wrap mx-5">
             {events
               .filter((event) =>
                 isAllGenresSelected

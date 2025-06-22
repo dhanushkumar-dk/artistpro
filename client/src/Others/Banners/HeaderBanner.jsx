@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const HeaderBanner = () => {
@@ -70,7 +70,11 @@ const HeaderBanner = () => {
     >
       {/* Title in the center */}
       <div className="text-center flex-grow-1">
-        <h1 className="m-0">Artist Collaboration Hub</h1>
+        <Link to="/" className="text-decoration-none text-white">
+          <h1 className="m-0 p-0 fs-4 fs-md-2 fw-bold">
+            Artist Collaboration Hub
+          </h1>
+        </Link>
       </div>
 
       {/* Profile or Login section on the right */}
