@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import HeaderBanner from "../Others/Banners/HeaderBanner";
@@ -13,6 +13,9 @@ const Events = () => {
   const [filters, setFilters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchInput, setSearchInput] = useState(""); // new state for search input
+
+  const location = useLocation(); // 👈 get current location
   const navigate = useNavigate();
 
   const staticFilters = [
@@ -47,9 +50,19 @@ const Events = () => {
   };
 
   useEffect(() => {
+    if (location.hash) {
+      const element = document.querySelector(location.hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location]); // 👈 run whenever location changes
+
+  useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/eventsdata");
+        const response = await axios.get(process.env.REACT_APP_EVENTS_API);
+
         if (response.data.success) {
           const eventData = response.data.events;
           setEvents(eventData);
@@ -85,11 +98,27 @@ const Events = () => {
     <div className="bg-white">
       <HeaderBanner />
       <Navbar />
+
       <EventsBanner />
 
       <div className="text-center mt-4">
         <h2 className="fw-bold">Discover Events</h2>
         <p className="text-muted">Filter by genre, time, or experience</p>
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          className="form-control rounded-pill"
+          placeholder="Search for concerts, artists, or events..."
+          style={{
+            maxWidth: "500px",
+            margin: "20px auto",
+            padding: "10px",
+          }}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)} // handle input change
+        />
       </div>
 
       {/* Filters */}
@@ -156,7 +185,7 @@ const Events = () => {
       </div>
 
       {/* Event List */}
-      <div className=" my-4 bg-white" id="event_container">
+      <div className="my-4 bg-white" id="event_container">
         {loading ? (
           <div>Loading...</div>
         ) : error ? (
@@ -164,10 +193,19 @@ const Events = () => {
         ) : (
           <div className="d-flex flex-wrap mx-5">
             {events
-              .filter((event) =>
-                isAllGenresSelected
-                  ? true
-                  : selectedFilters.includes(event.genre)
+              .filter(
+                (event) =>
+                  (isAllGenresSelected
+                    ? true
+                    : selectedFilters.includes(event.genre)) &&
+                  ((event.name &&
+                    event.name
+                      .toLowerCase()
+                      .includes(searchInput.toLowerCase())) ||
+                    (event.artist &&
+                      event.artist
+                        .toLowerCase()
+                        .includes(searchInput.toLowerCase())))
               )
               .map((event) => (
                 <EventCard key={event._id} event={event} />

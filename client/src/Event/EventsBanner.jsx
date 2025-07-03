@@ -1,32 +1,26 @@
-// import heroBannerImage from "../../data/assets/heroBannerTablet.png"; // Import the image
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import heroBannerImage from "./assets_event/heroBannerTablet.png"; // Import the image
 
 const EventsBanner = () => {
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleGetStartedClick = () => {
+    navigate("/"); // Navigate to home page
+  };
+
   return (
     <div className="container-fluid p-0">
-      <div className="mb-4">
-        <input
-          type="text"
-          className="form-control rounded-pill"
-          placeholder="Search for concerts, artists, or events..."
-          style={{
-            maxWidth: "500px",
-            margin: "20px auto",
-            padding: "10px",
-          }}
-        />
-      </div>
-
       <div
         className="d-flex flex-column align-items-start justify-content-start text-left"
         style={{
-          backgroundImage: `url(${heroBannerImage})`, // Use the imported image here
+          backgroundImage: `url(${heroBannerImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           height: "500px",
           color: "white",
-          backgroundColor: "rgba(0, 0, 0, 1)", // black background
-          padding: "30px", // Add padding to position text away from the edges
+          backgroundColor: "rgba(0, 0, 0, 1)",
+          padding: "30px",
         }}
       >
         <div className="mb-3">
@@ -56,7 +50,9 @@ const EventsBanner = () => {
         </div>
 
         <div className="mb-3">
-          <button className="btn btn-primary">Get Started</button>
+          <button className="btn btn-primary" onClick={handleGetStartedClick}>
+            Get Started
+          </button>
         </div>
       </div>
     </div>
