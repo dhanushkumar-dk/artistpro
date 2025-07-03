@@ -154,7 +154,7 @@ git push origin feature/YourFeature
 
 ArtistPro Team  
 Dhanush Kumar  
-dhanushkumar.dk@gmail.com  
+dhanushkumar9444@gmail.com  
 https://linkedin.com/in/dhanushkumar-dk
 
 ---
@@ -165,7 +165,7 @@ This project is licensed under the MIT License.
 
 MIT License
 
-Copyright (c) [year] Dhanush Kumar
+Copyright (c) [2025] Dhanush Kumar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
