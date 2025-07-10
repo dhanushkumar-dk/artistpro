@@ -17,9 +17,9 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav mx-auto">
-            {" "}
-            {/* 'mx-auto' to center align the items */}
+          {/* 'mx-auto' to center align the items */}
+          {/* <ul className="navbar-nav mx-auto"> */}
+          <ul className="navbar-nav ">
             <li className="nav-item">
               <NavLink to="/" className="nav-link" activeClassName="active">
                 Home
@@ -43,7 +43,7 @@ const Navbar = () => {
                 Instruments
               </NavLink>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <NavLink
                 to="/my-tickets"
                 className="nav-link"
@@ -69,7 +69,7 @@ const Navbar = () => {
               >
                 Activity
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>
