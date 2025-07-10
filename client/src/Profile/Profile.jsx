@@ -4,6 +4,24 @@ import HeaderBanner from "../Others/Banners/HeaderBanner";
 import ProfileNavbar from "./Components/ProfileNavbar";
 import { Country, State } from "country-state-city";
 
+// ✅ Password Validator Utility
+const checkPasswordRules = (password) => {
+  const issues = [];
+  const specialChars = password.match(/[@#$%/]/g) || [];
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasDigit = /\d/.test(password);
+
+  if (password.length < 8) issues.push("Minimum 8 characters required");
+  if (specialChars.length < 1)
+    issues.push("At least 1 special character required (@, #, $, %, /)");
+  if (!hasLower) issues.push("At least 1 lowercase letter required");
+  if (!hasUpper) issues.push("At least 1 uppercase letter required");
+  if (!hasDigit) issues.push("At least 1 number required");
+
+  return issues;
+};
+
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -11,6 +29,8 @@ const ProfilePage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [allCountries, setAllCountries] = useState([]);
   const [statesForCountry, setStatesForCountry] = useState([]);
+  const [passwordErrors, setPasswordErrors] = useState([]);
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -48,6 +68,11 @@ const ProfilePage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "password") {
+      const issues = checkPasswordRules(value);
+      setPasswordErrors(issues);
+    }
   };
 
   const handleCountryChange = (e) => {
@@ -62,13 +87,26 @@ const ProfilePage = () => {
   };
 
   const handleEdit = () => setIsEditing(true);
+
   const handleCancel = () => {
     setFormData(user);
     setIsEditing(false);
+    setPasswordErrors([]);
+    setValidationError("");
   };
 
   const handleSave = () => {
     const token = localStorage.getItem("token");
+
+    if (formData.password) {
+      const issues = checkPasswordRules(formData.password);
+      if (issues.length > 0) {
+        setPasswordErrors(issues);
+        setValidationError("Password does not meet security requirements.");
+        return;
+      }
+    }
+
     axios
       .put("http://localhost:5000/user", formData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -76,23 +114,33 @@ const ProfilePage = () => {
       .then(() => {
         setUser(formData);
         setIsEditing(false);
+        setPasswordErrors([]);
+        setValidationError("");
       })
       .catch((err) => console.error("Save failed:", err));
   };
 
-  // ✅ MODIFIED renderField: added "editable" argument to allow disabling edits for specific fields
   const renderField = (label, name, type = "text", half = false) => (
     <div className={`mb-3 ${half ? "col-md-6" : "col-12"}`}>
       <label className="form-label text-secondary fw-semibold">{label}</label>
       {isEditing ? (
-        <input
-          type={type}
-          className="form-control"
-          name={name}
-          value={formData[name] || ""}
-          onChange={handleChange}
-          required
-        />
+        <>
+          <input
+            type={type}
+            className="form-control"
+            name={name}
+            value={formData[name] || ""}
+            onChange={handleChange}
+            required
+          />
+          {name === "password" && passwordErrors.length > 0 && (
+            <ul className="text-warning small ps-3 mt-2">
+              {passwordErrors.map((err, idx) => (
+                <li key={idx}>{err}</li>
+              ))}
+            </ul>
+          )}
+        </>
       ) : (
         <div className="form-control bg-light">{user[name] || "-"}</div>
       )}
@@ -101,17 +149,21 @@ const ProfilePage = () => {
 
   if (!user)
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" />
-      </div>
+      <>
+        <HeaderBanner />
+        <ProfileNavbar />
+        <div className="d-flex justify-content-center align-items-center vh-100 bg-white">
+          <div className="spinner-border text-primary" />
+        </div>
+      </>
     );
 
   return (
-    <div>
+    <>
       <HeaderBanner />
       <ProfileNavbar />
 
-      <div className="container my-5 d-flex justify-content-center">
+      <div className="container my-0 d-flex justify-content-center bg-white py-5">
         <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "800px" }}>
           <div className="d-flex justify-content-between align-items-start flex-wrap mb-4">
             <div>
@@ -148,6 +200,10 @@ const ProfilePage = () => {
             </div>
           </div>
 
+          {validationError && (
+            <div className="alert alert-danger">{validationError}</div>
+          )}
+
           <hr />
 
           {/* Description */}
@@ -177,13 +233,14 @@ const ProfilePage = () => {
           <div className="row">
             {renderField("First Name", "firstName", "text", true)}
             {renderField("Last Name", "lastName", "text", true)}
+
             <div className="mb-3 col-md-6">
               <label className="form-label text-secondary fw-semibold">
                 Email
               </label>
               <div className="form-control bg-light">{user.email || "-"}</div>
             </div>
-            {/* {renderField("Email", "email", "email", true, false)} */}
+
             {renderField("Password", "password", "password", true)}
 
             {/* Country */}
@@ -258,7 +315,7 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* Phone Number (view-only) */}
+            {/* Phone Number (read-only) */}
             <div className="mb-3 col-md-6">
               <label className="form-label text-secondary fw-semibold">
                 Phone Number
@@ -268,7 +325,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

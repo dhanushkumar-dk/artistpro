@@ -18,6 +18,8 @@ const Register = () => {
   const [states, setStates] = useState([]);
   const [allCountries, setAllCountries] = useState([]);
   const [description, setDescription] = useState("");
+  const [errors, setErrors] = useState({});
+  const [passwordHints, setPasswordHints] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,8 +35,46 @@ const Register = () => {
     }
   }, [country]);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const checkPasswordRules = (password) => {
+    const issues = [];
+    const specialChars = password.match(/[@#$%/]/g) || [];
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasDigit = /\d/.test(password);
+
+    if (password.length < 8) issues.push("Minimum 8 characters required");
+    if (specialChars.length < 1)
+      issues.push("At least 1 special character required (@, #, $, %, /)");
+    if (!hasLower) issues.push("At least 1 lowercase letter required");
+    if (!hasUpper) issues.push("At least 1 uppercase letter required");
+    if (!hasDigit) issues.push("At least 1 number required");
+
+    return issues;
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const validationErrors = {};
+    const passwordIssues = checkPasswordRules(password);
+
+    if (!validateEmail(email)) {
+      validationErrors.email = "Invalid email format";
+    }
+
+    if (passwordIssues.length > 0) {
+      validationErrors.password = "Password does not meet requirements";
+    }
+
+    setErrors(validationErrors);
+    setPasswordHints(passwordIssues);
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     const selectedCountry = Country.getCountryByCode(country);
     const fullPhone =
@@ -101,13 +141,11 @@ const Register = () => {
                   type="text"
                   className="form-control"
                   id="firstName"
-                  placeholder="Enter first name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
                 />
               </div>
-
               <div className="col-md-6 mb-3">
                 <label htmlFor="lastName" className="form-label">
                   Last Name
@@ -116,7 +154,6 @@ const Register = () => {
                   type="text"
                   className="form-control"
                   id="lastName"
-                  placeholder="Enter last name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
@@ -130,13 +167,15 @@ const Register = () => {
               </label>
               <input
                 type="email"
-                className="form-control"
+                className={`form-control ${errors.email ? "is-invalid" : ""}`}
                 id="email"
-                placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+              {errors.email && (
+                <div className="invalid-feedback">{errors.email}</div>
+              )}
             </div>
 
             <div className="mb-3">
@@ -145,13 +184,28 @@ const Register = () => {
               </label>
               <input
                 type="password"
-                className="form-control"
+                className={`form-control ${
+                  errors.password ? "is-invalid" : ""
+                }`}
                 id="password"
-                placeholder="Create password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  const pwd = e.target.value;
+                  setPassword(pwd);
+                  setPasswordHints(checkPasswordRules(pwd));
+                }}
                 required
               />
+              {errors.password && (
+                <div className="invalid-feedback">{errors.password}</div>
+              )}
+              {passwordHints.length > 0 && (
+                <ul className="mt-2 text-warning small ps-3">
+                  {passwordHints.map((hint, index) => (
+                    <li key={index}>{hint}</li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             <div className="row">
@@ -209,7 +263,6 @@ const Register = () => {
                   type="tel"
                   className="form-control"
                   id="phone"
-                  placeholder="Enter phone number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -225,7 +278,6 @@ const Register = () => {
                 type="text"
                 className="form-control"
                 id="address"
-                placeholder="Enter address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
@@ -240,7 +292,6 @@ const Register = () => {
                 <textarea
                   className="form-control"
                   id="description"
-                  placeholder="Describe your art or experience"
                   rows="3"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
