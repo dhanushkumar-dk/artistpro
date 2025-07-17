@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import Navbar from "../Others/components/Navbar";
 const InstrumentDetail = () => {
   const [instrument, setInstrument] = useState(null);
   const { id } = useParams(); // Fetch the instrument ID from the URL
@@ -25,8 +23,6 @@ const InstrumentDetail = () => {
 
   return (
     <div className="bg-light">
-      <HeaderBanner />
-      <Navbar />
       <div className="container py-5 ">
         <div className="row justify-content-center">
           <div className="col-lg-8 col-md-10">

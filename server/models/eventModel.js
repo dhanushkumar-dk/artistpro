@@ -8,9 +8,9 @@ const eventSchema = new mongoose.Schema({
   description: { type: String, required: true },
   location: { type: String, required: true },
   date: { type: Date, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "FormDataModel" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "log_reg_form" },
   slots: { type: Number, required: true },
-  bookeduser: [{ type: mongoose.Schema.Types.ObjectId, ref: "FormDataModel" }],
+  bookeduser: [{ type: mongoose.Schema.Types.ObjectId, ref: "log_reg_form" }],
   link: { type: String, required: true },
 });
 

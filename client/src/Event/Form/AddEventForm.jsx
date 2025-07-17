@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import HeaderBanner from "../../Others/Banners/HeaderBanner";
 import Navbar from "../../Others/components/Navbar";
+import { BACKEND_BASE_URL } from "../../config";
 
 const AddEventForm = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const AddEventForm = () => {
       if (!token) return;
 
       try {
-        const response = await axios.get("http://127.0.0.1:5000/user", {
+        const response = await axios.get(`${BACKEND_BASE_URL}/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -61,13 +62,9 @@ const AddEventForm = () => {
     if (image) data.append("image", image);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/addevent",
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await axios.post(`${BACKEND_BASE_URL}/addevent`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (response.data.success) {
         setSuccessMessage("Event added successfully!");

@@ -12,9 +12,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const FormDataModel = require("./models/FormData");
+const Event = require("./models/eventModel");
 const Post = require("./models/createPostFormData");
 const Instrument = require("./models/InstrumentModel");
-const Event = require("./models/eventModel");
 
 const app = express();
 const PORT = 5000;
@@ -88,6 +88,48 @@ mongoose.connect(
     useUnifiedTopology: true,
   }
 );
+
+// -------------------------------------------------
+
+app.get("/event/:id/booked-users", async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid event ID",
+      });
+    }
+
+    // Fetch event and populate bookeduser array with selected fields
+    const event = await Event.findById(eventId).populate({
+      path: "bookeduser",
+      select: "firstName lastName email phone",
+    });
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
+    }
+
+    // bookeduser will be an array of user objects
+    res.status(200).json({
+      success: true,
+      bookedUsers: event.bookeduser,
+    });
+  } catch (error) {
+    console.error("Error fetching booked users:", error);
+    res.status(500).json({
+      success: false,
+      message: `Server error: ${error.message}`,
+    });
+  }
+});
+// -------------------------------------------------
 
 // Register User
 app.post("/register", async (req, res) => {

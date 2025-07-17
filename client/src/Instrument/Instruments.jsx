@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import Navbar from "../Others/components/Navbar";
 import InstrumentCard from "./InstrumentCard";
 
 const InstrumentsComponent = () => {
@@ -224,9 +222,6 @@ const InstrumentsComponent = () => {
 
   return (
     <div className="bg-light">
-      <HeaderBanner />
-      <Navbar />
-
       <div className="container py-5">
         <ToastContainer position="top-center" autoClose={3000} />
         <h1 className="mb-4 text-center">Available Instruments</h1>

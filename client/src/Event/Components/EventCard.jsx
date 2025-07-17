@@ -1,35 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import axios from "axios";
 import { Modal, Button } from "react-bootstrap"; // import Bootstrap Modal
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { BACKEND_BASE_URL } from "../../config";
+import axios from "axios";
 
-const EventCard = ({ event }) => {
-  const [userData, setUserData] = useState({});
+const EventCard = ({ event, userData }) => {
+  // const [userData, setUserData] = useState({});
   const [showModal, setShowModal] = useState(false); // modal state
   const [rsvpLoading, setRsvpLoading] = useState(false); // to handle loading state
 
   const navigate = useNavigate();
   const remainingSlots = event.slots - event.bookeduser.length;
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axios
-      .get("http://localhost:5000/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.data) {
-          setUserData(res.data);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-      });
-  }, []);
 
   const handleRSVP = () => {
     const token = localStorage.getItem("token");
@@ -42,8 +23,9 @@ const EventCard = ({ event }) => {
     setRsvpLoading(true);
     axios
       .post(
-        `http://localhost:5000/eventsdata/${event._id}/rsvp`,
-        { userId: userData.userId },
+        `${BACKEND_BASE_URL}/eventsdata/${event._id}/rsvp`,
+        // { userId: userData.userId },
+        { userId: userData._id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,7 +59,7 @@ const EventCard = ({ event }) => {
             }}
           >
             <img
-              src={`http://localhost:5000/uploads/${event.image}`}
+              src={`${BACKEND_BASE_URL}/uploads/${event.image}`}
               alt={event.name}
               className="card-img-top"
               style={{
@@ -130,7 +112,7 @@ const EventCard = ({ event }) => {
         </div>
       </div>
 
-      {/* ✅ Modal Component */}
+      {/*  Modal Component */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm RSVP</Modal.Title>

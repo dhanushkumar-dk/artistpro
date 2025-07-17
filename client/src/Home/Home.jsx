@@ -2,25 +2,23 @@
 
 // src/pages/Home.jsx
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
-import HeaderBanner from "../Others/Banners/HeaderBanner"; // Import HeaderBanner
-import Navbar from "../Others/components/Navbar"; // Import Navbar
+import axios from "axios";
+
+import { BACKEND_BASE_URL } from "../config";
 
 // Assets
-import center2_img from "../assets/center2.webp";
-import spotify_img from "../assets/spotify.png";
-import amazon_music_img from "../assets/amazon_music.png";
-import youtube_img from "../assets/yt_music.png";
-import concert_img from "../assets/concert_img.jpg";
-import concert_img1 from "../assets/concert_img1.jpg";
-import concert_img2 from "../assets/concert_img2.jpg";
+import {
+  popularEventsData,
+  sellingFastEventsData,
+} from "./Assets/homeRecommendationEventsData";
+import { MusicPlatformData } from "./Assets/MusicPlatformData";
+import MusicPlatformCard from "./Components/MusicPlatformCard";
 
-import artist_square_1 from "../assets/artist_square_1.jpg";
-import artist_square_3 from "../assets/artist_square_3.jpg";
-import artist_square_4 from "../assets/artist_square_4.jpg";
-
-import calander_img_logo from "../assets/calander_logo.webp";
+import center2_img from "../assets/center2.jpg";
+import calander_img_logo from "../assets/calander_logo.jpg";
+import greyPin from "../assets/greyPin.svg";
+import { RecommendationEventCard } from "./Components/RecommendationEventCard";
 
 const Home = () => {
   const [userData, setUserData] = useState(null);
@@ -30,7 +28,7 @@ const Home = () => {
     if (!token) return;
 
     axios
-      .get("http://localhost:5000/user", {
+      .get(`${BACKEND_BASE_URL}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,10 +43,7 @@ const Home = () => {
 
   return (
     <div className="bg-white">
-      <HeaderBanner />
-      <Navbar />
-
-      {/* <!-- Header Banner Start --> */}
+      {/*  Header Banner Start  */}
       <div
         class="header-banner"
         style={{
@@ -60,9 +55,9 @@ const Home = () => {
         }}
       >
         <div class="container my-5">
-          {/* <!-- Header Banner --> */}
+          {/*  Header Banner  */}
           <div class="row align-items-center">
-            {/* <!-- Left Column --> */}
+            {/*  Left Column */}
             <div class="col-12 col-md-8 mb-4 mb-md-0 text-white">
               <h1 class="display-4">
                 <span
@@ -81,7 +76,7 @@ const Home = () => {
               </p>
             </div>
 
-            {/* <!-- Right Column --> */}
+            {/* Right Column  */}
             <div class="col-12 col-md-4">
               <img
                 src={center2_img}
@@ -92,233 +87,137 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {/* <!-- Platform Cards Section Start --> */}
-        <div class="container my-5">
-          <div class="row g-4 justify-content-center">
-            {/* <!-- Spotify Card --> */}
-            <div class="col-12 col-sm-6 col-md-4">
-              <div class="card flex-row p-2 d-flex align-items-center justify-content-between">
-                <img
-                  src={spotify_img}
-                  alt="Spotify"
-                  width="40"
-                  height="40"
-                  class="me-3"
-                />
-                <p class="text-success fw-bold m-0 p-0">Spotify</p>
-                <button class="btn btn-sm mx-2 text-white bg-dark rounded-pill">
-                  Connect
-                </button>
-              </div>
-            </div>
-            {/* <!-- Amazon  Card --> */}
-            <div class="col-12 col-sm-6 col-md-4">
-              <div class="card flex-row p-2 d-flex align-items-center justify-content-between">
-                <img
-                  src={amazon_music_img}
-                  alt="Amazon "
-                  width="40"
-                  height="40"
-                  class="me-3"
-                />
-                <p class="text-success fw-bold m-0 p-0 nowrap">Amazon music</p>
-                <button class="btn btn-sm mx-2 text-white bg-dark rounded-pill">
-                  Connect
-                </button>
-              </div>
-            </div>
-            {/* <!-- Youtube Card --> */}
-            <div class="col-12 col-sm-6 col-md-4">
-              <div class="card flex-row p-2 d-flex align-items-center justify-content-between">
-                <img
-                  src={youtube_img}
-                  alt="Youtube"
-                  width="40"
-                  height="40"
-                  class="me-3"
-                />
-                <p class="text-success fw-bold m-0 p-0">Youtube</p>
-                <button class="btn btn-sm mx-2 text-white bg-dark rounded-pill">
-                  Connect
-                </button>
-              </div>
-            </div>
+        {/*  Platform Cards Section Start */}
+        <div className="container my-5">
+          <div className="row g-4 justify-content-center">
+            {MusicPlatformData.map((platform, index) => (
+              <MusicPlatformCard
+                key={index}
+                imgSrc={platform.imgSrc}
+                alt={platform.alt}
+                name={platform.name}
+              />
+            ))}
           </div>
         </div>
 
-        {/* <!-- card section end --> */}
+        {/* card section end  */}
       </div>
-      {/* <!-- Header Banner section end --> */}
+      {/*  Header Banner section end  */}
 
-      {/* <!-- Popular cards section you start --> */}
-      <div class="container py-5">
-        <div class="d-flex justify-content-center align-items-center flex-column">
-          <div class="row w-100 d-flex justify-content-center align-items-center">
-            <div class="d-flex flex-column justify-content-center align-items-center custom-card p-4 border rounded shadow">
-              <div class="row w-100 d-flex justify-content-between align-items-center mb-4">
-                <div class="col">
+      {/* Popular cards section you start  */}
+      <div className="container py-5">
+        <div className="d-flex justify-content-center align-items-center flex-column">
+          <div className="row w-100 d-flex justify-content-center align-items-center">
+            <div className="d-flex flex-column justify-content-center align-items-center custom-card p-4 border rounded shadow">
+              {/* Row 1: Heading and View All */}
+              <div className="row w-100 d-flex justify-content-between align-items-center mb-4">
+                <div className="col">
                   <h4>Popular in Chennai, India.</h4>
-                  <p>What's happening around you...</p>
+                  <p>What's happening around you</p>
                 </div>
-                <div class="col text-end">
-                  <ul class="list-unstyled mb-0">
+                <div className="col text-end">
+                  <ul className="list-unstyled mb-0">
                     <li>
                       <a
                         href="./events#event_container"
-                        class="text-decoration-none"
+                        className="text-decoration-none"
                       >
-                        <span class="text-decoration-none">
+                        <span className="text-decoration-none">
                           View All &rarr;
                         </span>
                       </a>
                     </li>
                   </ul>
                 </div>
-                {/* <!-- View All Link Sample --> */}
-                {/* <!-- <div class="col text-end">
-                <ul class="list-unstyled mb-0">
-                  <li>
-                    <a
-                      href="./events.html#events_card_display"
-                      class="text-decoration-none"
+              </div>
+
+              {/* Conditional Rendering */}
+              {popularEventsData.length === 0 ? (
+                <>
+                  <img src={greyPin} alt="No events" />
+                  <p className="mt-3 mb-1 fw-bold">No upcoming events</p>
+                  <p className="text-muted mb-3">Try something else</p>
+
+                  <div className="d-flex align-items-center justify-content-center gap-3 w-100">
+                    <Link
+                      href="#"
+                      className="btn btn-danger text-white rounded-pill"
                     >
-                      <span class="text-decoration-none">View All &rarr;</span>
-                    </a>
-                  </li>
-                </ul>
-              </div> --> */}
-              </div>
-              <div class="row g-4">
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="card h-100 shadow-sm">
-                    <img
-                      src={concert_img}
-                      className="card-img-top"
-                      alt="Event Image_1"
-                    />
-                    <div class="card-body">
-                      <div class="d-flex align-items-center mb-2">
-                        <img
-                          src={calander_img_logo}
-                          alt="Calendar"
-                          width="20"
-                          height="20"
-                          class="me-2"
-                        />
-                        <p class="mb-0 text-muted small">August 15, 2025</p>
-                      </div>
-                      <h4 class="card-title">Event Title 1</h4>
-                      <p class="card-text">
-                        Short description or subtitle of the event goes here.
-                      </p>
-                    </div>
+                      Follow More Artists
+                    </Link>
+                    <Link
+                      href="#"
+                      className="btn btn-danger text-white rounded-pill"
+                    >
+                      Adjust My Location
+                    </Link>
                   </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="card h-100 shadow-sm">
-                    <img
-                      src={concert_img1}
-                      class="card-img-top"
-                      alt="Event Image_2"
+                </>
+              ) : (
+                <div className="row g-4">
+                  {popularEventsData.map((event, index) => (
+                    <RecommendationEventCard
+                      key={index}
+                      image={event.image}
+                      date={event.date}
+                      title={event.title}
+                      description={event.description}
+                      calendarIcon={calander_img_logo}
                     />
-                    <div class="card-body">
-                      <div class="d-flex align-items-center mb-2">
-                        <img
-                          src={calander_img_logo}
-                          alt="Calendar"
-                          width="20"
-                          height="20"
-                          class="me-2"
-                        />
-                        <p class="mb-0 text-muted small">September 2, 2025</p>
-                      </div>
-                      <h4 class="card-title">Event Title 2</h4>
-                      <p class="card-text">
-                        Another brief description for this event.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  ))}
 
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="card h-100 shadow-sm">
-                    <img
-                      src={concert_img2}
-                      class="card-img-top"
-                      alt="Event Image_3"
-                    />
-                    <div class="card-body">
-                      <div class="d-flex align-items-center mb-2">
-                        <img
-                          src={calander_img_logo}
-                          alt="Calendar"
-                          width="20"
-                          height="20"
-                          class="me-2"
-                        />
-                        <p class="mb-0 text-muted small">October 10, 2025</p>
-                      </div>
-                      <h4 class="card-title">Event Title 3</h4>
-                      <p class="card-text">
-                        Details for a third event or content card.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* <!-- Right section or view all card --> */}
-                {/* <!-- Right Column: View All --> */}
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="h-100 shadow-sm d-flex flex-column align-items-center justify-content-center">
-                    <div class="d-flex flex-column align-items-center justify-content-center py-3">
-                      <a
-                        href="./events#event_container"
-                        class="text-decoration-none text-dark"
-                      >
-                        <div
-                          className="rounded-circle shadow d-flex align-items-center justify-content-center mb-2"
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            backgroundColor: "#f8f9fa",
-                          }}
+                  {/* View All Card */}
+                  <div className="col-12 col-sm-6 col-lg-3">
+                    <div className="h-100 shadow-sm d-flex flex-column align-items-center justify-content-center">
+                      <div className="d-flex flex-column align-items-center justify-content-center py-3">
+                        <a
+                          href="./events#event_container"
+                          className="text-decoration-none text-dark"
                         >
-                          &rarr;
-                        </div>
-                        <p class="mb-0 fw-semibold">View All</p>
-                      </a>
+                          <div
+                            className="rounded-circle shadow d-flex align-items-center justify-content-center mb-2"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              backgroundColor: "#f8f9fa",
+                            }}
+                          >
+                            &rarr;
+                          </div>
+                          <p className="mb-0 fw-semibold">View All</p>
+                        </a>
+                      </div>
                     </div>
                   </div>
+                  {/* View All Card End */}
                 </div>
-
-                {/* <!-- Right section or view all card End --> */}
-                {/* <!-- Right Column: View All End  --> */}
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-      {/* <!-- Popular cards section you end --> */}
+      {/* Popular cards section you end  */}
 
-      {/* <!-- Selling Fast cards section you start --> */}
-      <div class="container py-5">
-        <div class="d-flex justify-content-center align-items-center flex-column">
-          <div class="row w-100 d-flex justify-content-center align-items-center">
-            <div class="d-flex flex-column justify-content-center align-items-center custom-card p-4 border rounded shadow">
-              <div class="row w-100 d-flex justify-content-between align-items-center mb-4">
-                <div class="col">
+      {/* Selling Fast cards section you start */}
+      <div className="container py-5">
+        <div className="d-flex justify-content-center align-items-center flex-column">
+          <div className="row w-100 d-flex justify-content-center align-items-center">
+            <div className="d-flex flex-column justify-content-center align-items-center custom-card p-4 border rounded shadow">
+              {/* Row 1: Heading and View All */}
+              <div className="row w-100 d-flex justify-content-between align-items-center mb-4">
+                <div className="col">
                   <h4>Selling Fast</h4>
                   <p>Get these tickets while you still can</p>
                 </div>
-                <div class="col text-end">
-                  <ul class="list-unstyled mb-0">
+                <div className="col text-end">
+                  <ul className="list-unstyled mb-0">
                     <li>
                       <a
                         href="./events#event_container"
-                        class="text-decoration-none"
+                        className="text-decoration-none"
                       >
-                        <span class="text-decoration-none">
+                        <span className="text-decoration-none">
                           View All &rarr;
                         </span>
                       </a>
@@ -326,126 +225,77 @@ const Home = () => {
                   </ul>
                 </div>
               </div>
-              <div class="row g-4">
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="card h-100 shadow-sm">
-                    <img
-                      src={artist_square_1}
-                      className="card-img-top"
-                      alt="Event Image_1"
-                    />
-                    <div class="card-body">
-                      <div class="d-flex align-items-center mb-2">
-                        <img
-                          src={calander_img_logo}
-                          alt="Calendar"
-                          width="20"
-                          height="20"
-                          class="me-2"
-                        />
-                        <p class="mb-0 text-muted small">August 15, 2025</p>
-                      </div>
-                      <h4 class="card-title">Event Title 1</h4>
-                      <p class="card-text">
-                        Short description or subtitle of the event goes here.
-                      </p>
-                    </div>
-                  </div>
-                </div>
 
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="card h-100 shadow-sm">
-                    <img
-                      src={artist_square_3}
-                      className="card-img-top"
-                      alt="Event Image_2"
-                    />
-                    <div class="card-body">
-                      <div class="d-flex align-items-center mb-2">
-                        <img
-                          src={calander_img_logo}
-                          alt="Calendar"
-                          width="20"
-                          height="20"
-                          class="me-2"
-                        />
-                        <p class="mb-0 text-muted small">September 2, 2025</p>
-                      </div>
-                      <h4 class="card-title">Event Title 2</h4>
-                      <p class="card-text">
-                        Another brief description for this event.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              {/* Conditional Rendering */}
+              {sellingFastEventsData.length === 0 ? (
+                <>
+                  <img src={greyPin} alt="No events" />
+                  <p className="mt-3 mb-1 fw-bold">No upcoming events</p>
+                  <p className="text-muted mb-3">Try something else</p>
 
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="card h-100 shadow-sm">
-                    <img
-                      src={artist_square_4}
-                      className="card-img-top"
-                      alt="Event Image_3"
-                    />
-                    <div class="card-body">
-                      <div class="d-flex align-items-center mb-2">
-                        <img
-                          src={calander_img_logo}
-                          alt="Calendar"
-                          width="20"
-                          height="20"
-                          class="me-2"
-                        />
-                        <p class="mb-0 text-muted small">October 10, 2025</p>
-                      </div>
-                      <h4 class="card-title">Event Title 3</h4>
-                      <p class="card-text">
-                        Details for a third event or content card.
-                      </p>
-                    </div>
+                  <div className="d-flex align-items-center justify-content-center gap-3 w-100">
+                    <Link
+                      href="#"
+                      className="btn btn-danger text-white rounded-pill"
+                    >
+                      Follow More Artists
+                    </Link>
+                    <Link
+                      href="#"
+                      className="btn btn-danger text-white rounded-pill"
+                    >
+                      Adjust My Location
+                    </Link>
                   </div>
-                </div>
+                </>
+              ) : (
+                <div className="row g-4">
+                  {sellingFastEventsData.map((event, index) => (
+                    <RecommendationEventCard
+                      key={index}
+                      image={event.image}
+                      date={event.date}
+                      title={event.title}
+                      description={event.description}
+                      calendarIcon={calander_img_logo}
+                    />
+                  ))}
 
-                {/* <!-- Right section or view all card --> */}
-                {/* <!-- Right Column: View All --> */}
-                <div class="col-12 col-sm-6 col-lg-3">
-                  <div class="h-100 shadow-sm d-flex flex-column align-items-center justify-content-center">
-                    <div class="d-flex flex-column align-items-center justify-content-center py-3">
-                      <a
-                        href="./events#event_container"
-                        className="text-decoration-none text-dark"
-                      >
-                        <div
-                          className="rounded-circle shadow d-flex align-items-center justify-content-center mb-2"
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            backgroundColor: "#f8f9fa",
-                          }}
+                  {/* View All Card */}
+                  <div className="col-12 col-sm-6 col-lg-3">
+                    <div className="h-100 shadow-sm d-flex flex-column align-items-center justify-content-center">
+                      <div className="d-flex flex-column align-items-center justify-content-center py-3">
+                        <a
+                          href="./events#event_container"
+                          className="text-decoration-none text-dark"
                         >
-                          &rarr;
-                        </div>
-                        <p className="mb-0 fw-semibold">View All</p>
-                      </a>
+                          <div
+                            className="rounded-circle shadow d-flex align-items-center justify-content-center mb-2"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              backgroundColor: "#f8f9fa",
+                            }}
+                          >
+                            &rarr;
+                          </div>
+                          <p className="mb-0 fw-semibold">View All</p>
+                        </a>
+                      </div>
                     </div>
                   </div>
+                  {/* View All Card End */}
                 </div>
-
-                {/* <!-- Right section or view all card End --> */}
-                {/* <!-- Right Column: View All End  --> */}
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-      {/* <!-- Selling Fast cards section you end --> */}
+      {/* Selling Fast cards section you end */}
+
+      {/* Login Recommendation or User data display start */}
 
       <div className="container-fluid p-0">
-        {/* Display the Header Banner first */}
-        {/* <HeaderBanner /> */}
-
-        {/* Display the Navbar after the Header Banner */}
-        {/* <Navbar /> */}
-
         {userData ? (
           <>
             {/* Display user content in a table */}
@@ -513,6 +363,7 @@ const Home = () => {
           </div>
         )}
       </div>
+      {/* Login Recommendation or User data display end */}
     </div>
   );
 };

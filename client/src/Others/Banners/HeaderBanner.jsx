@@ -1,35 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 
-const HeaderBanner = () => {
+const HeaderBanner = ({ userName, setUserName, isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("Guest");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axios
-      .get("http://localhost:5000/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.data) {
-          setUserName(`${res.data.firstName} ${res.data.lastName}`);
-          setIsLoggedIn(true);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-        setIsLoggedIn(false);
-      });
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

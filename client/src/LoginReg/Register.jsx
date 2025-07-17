@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Country, State } from "country-state-city";
+import { BACKEND_BASE_URL } from "../config";
+import { checkPasswordRules } from "../utils/passwordUtils";
 import axios from "axios";
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import Navbar from "../Others/components/Navbar";
 
 const Register = () => {
   const [role, setRole] = useState("User");
@@ -40,23 +40,6 @@ const Register = () => {
     return emailRegex.test(email);
   };
 
-  const checkPasswordRules = (password) => {
-    const issues = [];
-    const specialChars = password.match(/[@#$%/]/g) || [];
-    const hasLower = /[a-z]/.test(password);
-    const hasUpper = /[A-Z]/.test(password);
-    const hasDigit = /\d/.test(password);
-
-    if (password.length < 8) issues.push("Minimum 8 characters required");
-    if (specialChars.length < 1)
-      issues.push("At least 1 special character required (@, #, $, %, /)");
-    if (!hasLower) issues.push("At least 1 lowercase letter required");
-    if (!hasUpper) issues.push("At least 1 uppercase letter required");
-    if (!hasDigit) issues.push("At least 1 number required");
-
-    return issues;
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -83,7 +66,7 @@ const Register = () => {
         : phone;
 
     axios
-      .post("http://localhost:5000/register", {
+      .post(`${BACKEND_BASE_URL}/register`, {
         role,
         firstName,
         lastName,
@@ -104,8 +87,6 @@ const Register = () => {
 
   return (
     <div>
-      <HeaderBanner />
-      <Navbar />
       <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
         <div className="card p-4 shadow-lg w-100" style={{ maxWidth: "600px" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">

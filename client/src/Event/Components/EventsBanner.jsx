@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import heroBannerImage from "./assets_event/heroBannerTablet.png"; // Import the image
+import heroBannerImage from "../assets_event/heroBannerTablet.png"; // Import the image
 
 const EventsBanner = () => {
   const navigate = useNavigate(); // Initialize navigate

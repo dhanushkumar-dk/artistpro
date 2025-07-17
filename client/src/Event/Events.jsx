@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import Navbar from "../Others/components/Navbar";
-import EventsBanner from "./EventsBanner";
-import EventCard from "./EventCard"; // import here
+import EventsBanner from "./Components/EventsBanner";
+import EventCard from "./Components/EventCard"; // import here
 
-const Events = () => {
+const Events = ({ userData }) => {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [events, setEvents] = useState([]);
   const [filters, setFilters] = useState([]);
@@ -15,17 +13,10 @@ const Events = () => {
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState(""); // new state for search input
 
-  const location = useLocation(); // 👈 get current location
+  const location = useLocation(); //  get current location
   const navigate = useNavigate();
 
-  const staticFilters = [
-    "All Genres",
-    "Today",
-    "This Week",
-    "This Month",
-    "Choose Dates",
-    "Live Streams",
-  ];
+  const staticFilters = ["All Genres", "Today", "This Week", "This Month"];
 
   const isAllGenresSelected = selectedFilters.length === 0;
 
@@ -46,7 +37,7 @@ const Events = () => {
   };
 
   const handleAddEventClick = () => {
-    navigate("/events/addnewevent");
+    navigate("/events/add");
   };
 
   useEffect(() => {
@@ -56,7 +47,7 @@ const Events = () => {
         element.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }, [location]); // 👈 run whenever location changes
+  }, [location]); //  run whenever location changes
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -96,9 +87,6 @@ const Events = () => {
 
   return (
     <div className="bg-white">
-      <HeaderBanner />
-      <Navbar />
-
       <EventsBanner />
 
       <div className="text-center mt-4">
@@ -208,7 +196,7 @@ const Events = () => {
                         .includes(searchInput.toLowerCase())))
               )
               .map((event) => (
-                <EventCard key={event._id} event={event} />
+                <EventCard key={event._id} event={event} userData={userData} />
               ))}
           </div>
         )}

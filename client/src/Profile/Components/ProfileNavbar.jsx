@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-const Navbar = () => {
+const ProfileNavbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
@@ -34,42 +34,16 @@ const Navbar = () => {
                 Profile
               </NavLink>
             </li>
+            {/* to="/MyInstruments" */}
             <li className="nav-item">
               <NavLink
-                to="/MyInstruments"
+                to="/profile/my-instruments"
                 className="nav-link"
                 activeClassName="active"
               >
                 Instruments
               </NavLink>
             </li>
-            {/* <li className="nav-item">
-              <NavLink
-                to="/my-tickets"
-                className="nav-link"
-                activeClassName="active"
-              >
-                My Tickets
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/MyEvents"
-                className="nav-link"
-                activeClassName="active"
-              >
-                MyEvents
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/activity"
-                className="nav-link"
-                activeClassName="active"
-              >
-                Activity
-              </NavLink>
-            </li> */}
           </ul>
         </div>
       </div>
@@ -77,4 +51,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default ProfileNavbar;

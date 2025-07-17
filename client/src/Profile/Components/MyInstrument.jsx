@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { BACKEND_BASE_URL } from "../../config";
 import axios from "axios";
-import HeaderBanner from "../../Others/Banners/HeaderBanner";
-import Navbar from "./ProfileNavbar";
 
 const MyInstruments = () => {
   const [user, setUser] = useState(null);
@@ -19,7 +18,7 @@ const MyInstruments = () => {
     if (!token) return;
 
     axios
-      .get("http://localhost:5000/user", {
+      .get(`${BACKEND_BASE_URL}/user`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -34,7 +33,7 @@ const MyInstruments = () => {
   // Fetch instruments for owned and rented
   const fetchInstruments = (userId) => {
     axios
-      .get("http://localhost:5000/instruments")
+      .get(`${BACKEND_BASE_URL}/instruments`)
       .then((res) => {
         const owned = res.data.filter(
           (instrument) => instrument.userId === userId
@@ -61,7 +60,7 @@ const MyInstruments = () => {
 
     axios
       .put(
-        `http://localhost:5000/instruments/return/${instrumentId}`,
+        `${BACKEND_BASE_URL}/instruments/return/${instrumentId}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -84,9 +83,6 @@ const MyInstruments = () => {
 
   return (
     <div>
-      <HeaderBanner />
-      <Navbar />
-
       <div className="container py-5">
         <h1 className="mb-4 text-center">Instruments</h1>
 

@@ -1,6 +1,4 @@
 import { useState, useRef } from "react";
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import Navbar from "../Others/components/Navbar";
 import queries from "./chatbot_assets/queries";
 import answers from "./chatbot_assets/answers";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -70,9 +68,6 @@ const Chatbot = () => {
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-column">
-      <HeaderBanner />
-      <Navbar />
-
       <div className="container flex-grow-1 d-flex flex-column py-4 overflow-hidden">
         <div className="card shadow-lg border-0 flex-grow-1 d-flex flex-column">
           <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">

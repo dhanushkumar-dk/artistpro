@@ -1,40 +1,17 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import Navbar from "../Others/components/Navbar";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { BACKEND_BASE_URL } from "../config";
+import { checkPasswordRules } from "../utils/passwordUtils";
+import { validateEmail } from "../utils/loginUtils";
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [passwordHints, setPasswordHints] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  // Email validation
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Real-time password rule check (only 1 special char now)
-  const checkPasswordRules = (password) => {
-    const issues = [];
-    const specialChars = password.match(/[@#$%/]/g) || [];
-    const hasLower = /[a-z]/.test(password);
-    const hasUpper = /[A-Z]/.test(password);
-    const hasDigit = /\d/.test(password);
-
-    if (password.length < 8) issues.push("Minimum 8 characters required");
-    if (specialChars.length < 1)
-      issues.push("At least 1 special character required (@, #, $, %, /)");
-    if (!hasLower) issues.push("At least 1 lowercase letter required");
-    if (!hasUpper) issues.push("At least 1 uppercase letter required");
-    if (!hasDigit) issues.push("At least 1 number required");
-
-    return issues;
-  };
 
   // Submit handler with validation
   const handleLogin = async (e) => {
@@ -55,10 +32,11 @@ const Login = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const res = await axios.post("http://localhost:5000/login", {
+        const res = await axios.post(`${BACKEND_BASE_URL}/login`, {
           email,
           password,
         });
+        setIsLoggedIn(true);
         localStorage.setItem("token", res.data.token);
         navigate("/");
       } catch (err) {
@@ -69,8 +47,6 @@ const Login = () => {
 
   return (
     <div>
-      <HeaderBanner />
-      <Navbar />
       <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
         <div
           className="card p-4 shadow-lg"
@@ -141,7 +117,7 @@ const Login = () => {
           {error && <div className="alert alert-danger mt-3">{error}</div>}
 
           <p className="text-center mt-3 mb-0">
-            Don’t have an account? <Link to="/register">Register here</Link>.
+            Don't have an account? <Link to="/register">Register here</Link>.
           </p>
         </div>
       </div>

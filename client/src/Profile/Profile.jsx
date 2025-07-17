@@ -1,32 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import HeaderBanner from "../Others/Banners/HeaderBanner";
-import ProfileNavbar from "./Components/ProfileNavbar";
 import { Country, State } from "country-state-city";
+import { checkPasswordRules } from "../utils/passwordUtils";
+import { BACKEND_BASE_URL } from "../config";
 
-// ✅ Password Validator Utility
-const checkPasswordRules = (password) => {
-  const issues = [];
-  const specialChars = password.match(/[@#$%/]/g) || [];
-  const hasLower = /[a-z]/.test(password);
-  const hasUpper = /[A-Z]/.test(password);
-  const hasDigit = /\d/.test(password);
-
-  if (password.length < 8) issues.push("Minimum 8 characters required");
-  if (specialChars.length < 1)
-    issues.push("At least 1 special character required (@, #, $, %, /)");
-  if (!hasLower) issues.push("At least 1 lowercase letter required");
-  if (!hasUpper) issues.push("At least 1 uppercase letter required");
-  if (!hasDigit) issues.push("At least 1 number required");
-
-  return issues;
-};
-
+// const ProfilePage = ({ user, setUser, isLoggedIn, setIsLoggedIn }) => {
 const ProfilePage = () => {
+  // const [user, setUser] = useState(null);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [allCountries, setAllCountries] = useState([]);
   const [statesForCountry, setStatesForCountry] = useState([]);
   const [passwordErrors, setPasswordErrors] = useState([]);
@@ -37,7 +22,7 @@ const ProfilePage = () => {
     if (!token) return;
 
     axios
-      .get("http://localhost:5000/user", {
+      .get(`${BACKEND_BASE_URL}/user`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -108,7 +93,7 @@ const ProfilePage = () => {
     }
 
     axios
-      .put("http://localhost:5000/user", formData, {
+      .put(`${BACKEND_BASE_URL}/user`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
@@ -150,8 +135,6 @@ const ProfilePage = () => {
   if (!user)
     return (
       <>
-        <HeaderBanner />
-        <ProfileNavbar />
         <div className="d-flex justify-content-center align-items-center vh-100 bg-white">
           <div className="spinner-border text-primary" />
         </div>
@@ -160,9 +143,6 @@ const ProfilePage = () => {
 
   return (
     <>
-      <HeaderBanner />
-      <ProfileNavbar />
-
       <div className="container my-0 d-flex justify-content-center bg-white py-5">
         <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "800px" }}>
           <div className="d-flex justify-content-between align-items-start flex-wrap mb-4">
