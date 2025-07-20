@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { BACKEND_BASE_URL } from "../../config";
 import axios from "axios";
 
@@ -8,6 +8,7 @@ const EventDetails = () => {
   const [event, setEvent] = useState(null);
   const [error, setError] = useState(null);
   const [bookedUsers, setBookedUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -61,6 +62,14 @@ const EventDetails = () => {
   return (
     <div className="bg-light py-5">
       <div className="container">
+        <div className="d-flex justify-content-end mb-4">
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate("/events#event_container")}
+          >
+            &larr; Back to Events
+          </button>
+        </div>
         <div className="row g-4 align-items-center">
           <div className="col-12 col-md-5 d-flex justify-content-center">
             <img

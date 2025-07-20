@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import HeaderBanner from "../../Others/Banners/HeaderBanner";
-import Navbar from "../../Others/components/Navbar";
 import { BACKEND_BASE_URL } from "../../config";
 
 const AddEventForm = () => {
@@ -91,9 +89,6 @@ const AddEventForm = () => {
 
   return (
     <div className="bg-white">
-      <HeaderBanner />
-      <Navbar />
-
       <div className="container my-5">
         <div className="row justify-content-center">
           <div className="col-lg-8">

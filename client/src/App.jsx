@@ -75,7 +75,7 @@ const App = () => {
                 />
               }
             >
-              <Route index element={<LandingPage />} />
+              <Route index element={<LandingPage userName={userName} />} />
 
               {/* Auth Routes */}
               <Route
@@ -98,7 +98,10 @@ const App = () => {
                   }
                 />
                 <Route path="my-tickets" element={<MyTickets />} />
-                <Route path="my-instruments" element={<MyInstruments />} />
+                <Route
+                  path="my-instruments"
+                  element={<MyInstruments user={userData} />}
+                />
               </Route>
 
               {/* Event Routes as nested */}

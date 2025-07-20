@@ -89,20 +89,20 @@ const Events = ({ userData }) => {
     <div className="bg-white">
       <EventsBanner />
 
-      <div className="text-center mt-4">
-        <h2 className="fw-bold">Discover Events</h2>
-        <p className="text-muted">Filter by genre, time, or experience</p>
+      <div className="text-center my-1">
+        <h2 className="fw-bold m-0">Discover Events</h2>
+        <p className="text-muted m-0">Filter by genre, time, or experience</p>
       </div>
 
-      <div className="mb-4">
+      <div className=" m-0">
         <input
           type="text"
           className="form-control rounded-pill"
           placeholder="Search for concerts, artists, or events..."
           style={{
-            maxWidth: "500px",
-            margin: "20px auto",
-            padding: "10px",
+            maxWidth: "50%",
+            margin: "10px auto",
+            padding: "5px 15px",
           }}
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)} // handle input change
@@ -122,14 +122,13 @@ const Events = ({ userData }) => {
               className={`btn ${
                 selectedFilters.includes(filterItem.name) ||
                 (filterItem.name === "All Genres" && isAllGenresSelected)
-                  ? "btn-primary text-white"
-                  : "btn-outline-secondary"
+                  ? "btn-primary text-white  btn-sm"
+                  : "btn-outline-secondary  btn-sm"
               }`}
               onClick={() => handleFilterChange(filterItem.name)}
               style={{
                 fontSize: "14px",
                 borderRadius: "50px",
-                padding: "8px 18px",
                 transition: "all 0.3s ease",
                 whiteSpace: "nowrap",
               }}
@@ -166,20 +165,20 @@ const Events = ({ userData }) => {
       )}
 
       {/* Add Event Button */}
-      <div className="text-center my-5">
+      <div className="text-center my-2">
         <button className="btn btn-success" onClick={handleAddEventClick}>
           Add New Event
         </button>
       </div>
 
       {/* Event List */}
-      <div className="my-4 bg-white" id="event_container">
+      <div className="my-2 bg-white" id="event_container">
         {loading ? (
           <div>Loading...</div>
         ) : error ? (
           <div>{error}</div>
         ) : (
-          <div className="d-flex flex-wrap mx-5">
+          <div className="d-flex flex-wrap mx-2 mx-md-5">
             {events
               .filter(
                 (event) =>

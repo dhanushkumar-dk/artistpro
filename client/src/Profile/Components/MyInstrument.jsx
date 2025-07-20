@@ -1,12 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BACKEND_BASE_URL } from "../../config";
 import axios from "axios";
 
-const MyInstruments = () => {
-  const [user, setUser] = useState(null);
+const MyInstruments = ({ user }) => {
+  // const [user, setUser] = useState(null);
   const [ownedInstruments, setOwnedInstruments] = useState([]);
   const [rentedInstruments, setRentedInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  const viewInstrument = (id) => {
+    navigate(`/instrument/${id}`);
+  };
+
   // Function to format date
   const formatDate = (date) => {
     const d = new Date(date);
@@ -23,7 +31,7 @@ const MyInstruments = () => {
       })
       .then((res) => {
         if (res.data) {
-          setUser(res.data);
+          // setUser(res.data);
           fetchInstruments(res.data.userId);
         }
       })
@@ -103,24 +111,19 @@ const MyInstruments = () => {
                 <th>Description</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {ownedInstruments.map((instrument) => (
-                <tr key={instrument._id}>
+                <tr
+                  key={instrument._id}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => viewInstrument(instrument._id)}
+                >
                   <td>{instrument.instrumentName}</td>
                   <td>{instrument.instrumentDescription}</td>
                   <td>${instrument.amount}</td>
                   <td>{getInstrumentStatus(instrument.status)}</td>
-                  <td className="text-center">
-                    <a
-                      href={`/instrument/${instrument._id}`}
-                      className="btn btn-info btn-sm"
-                    >
-                      View Details
-                    </a>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -140,12 +143,21 @@ const MyInstruments = () => {
                 <th>Expected Return</th>
                 <th>Status</th>
                 <th>Return</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {rentedInstruments.map((instrument) => (
-                <tr key={instrument._id}>
+                <tr
+                  key={instrument._id}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => viewInstrument(instrument._id)}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#f5f5f5")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "")
+                  }
+                >
                   <td>{instrument.instrumentName}</td>
                   <td>{instrument.instrumentDescription}</td>
                   <td>${instrument.amount}</td>
@@ -161,14 +173,6 @@ const MyInstruments = () => {
                     >
                       Return
                     </button>
-                  </td>
-                  <td className="text-center">
-                    <a
-                      href={`/instrument/${instrument._id}`}
-                      className="btn btn-info btn-sm"
-                    >
-                      View Details
-                    </a>
                   </td>
                 </tr>
               ))}

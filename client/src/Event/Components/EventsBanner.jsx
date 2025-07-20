@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import heroBannerImage from "../assets_event/heroBannerTablet.png"; // Import the image
 

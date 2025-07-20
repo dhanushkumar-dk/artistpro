@@ -54,7 +54,7 @@ const Login = ({ setIsLoggedIn }) => {
         >
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3 className="mb-0">Login</h3>
-            <Link to="/home" className="btn btn-outline-primary btn-sm">
+            <Link to="/" className="btn btn-outline-primary btn-sm">
               Home
             </Link>
           </div>

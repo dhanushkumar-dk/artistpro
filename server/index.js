@@ -1,12 +1,11 @@
 const express = require("express");
-const multer = require("multer");
+const mongoose = require("mongoose");
 const cors = require("cors");
+
+const multer = require("multer");
 const { Server } = require("socket.io");
 const http = require("http");
-
 const path = require("path");
-
-const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -19,6 +18,15 @@ const Instrument = require("./models/InstrumentModel");
 const app = express();
 const PORT = 5000;
 const SECRET_KEY = "your_secret_key";
+
+// mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
+mongoose.connect(
+  "mongodb+srv://admin:dhanush123@cluster0.se9w4fs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 // Configure Multer storage and file naming
 const storage = multer.diskStorage({
@@ -63,7 +71,7 @@ const server = http.createServer(app);
 // Create Socket.IO server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Frontend origin
+    origin: "*", // Frontend origin
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
@@ -79,15 +87,6 @@ io.on("connection", (socket) => {
 
 // Make `io` accessible in routes
 app.set("io", io);
-
-// mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
-mongoose.connect(
-  "mongodb+srv://admin:dhanush123@cluster0.se9w4fs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
 
 // -------------------------------------------------
 

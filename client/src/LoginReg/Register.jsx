@@ -91,7 +91,7 @@ const Register = () => {
         <div className="card p-4 shadow-lg w-100" style={{ maxWidth: "600px" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h3 className="mb-0">Register</h3>
-            <Link to="/home" className="btn btn-outline-primary btn-sm">
+            <Link to="/" className="btn btn-outline-primary btn-sm">
               Home
             </Link>
           </div>

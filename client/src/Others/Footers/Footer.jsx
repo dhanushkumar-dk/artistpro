@@ -19,7 +19,7 @@ const Footer = () => {
         <div className="bg-white p-3 rounded shadow-sm">
           <ul className="nav justify-content-center align-items-center flex-wrap">
             <li className="nav-item">
-              <a className="nav-link text-dark fw-semibold" href="./home">
+              <a className="nav-link text-dark fw-semibold" href="./">
                 Home
               </a>
             </li>
@@ -68,7 +68,7 @@ const Footer = () => {
 
             {/* <!-- Copyright and Policies --> */}
             <div className="col-12 col-lg-6 d-flex flex-column align-items-center justify-content-center gap-1">
-              <p className="m-0">© 2011-2025 Bandsintown, LLC</p>
+              <p className="m-0">© 2025 Artist Collaboration Hub, LLC</p>
               <p className="m-0">
                 Terms of Use | Privacy Policy | Cookie Policy
               </p>

@@ -8,6 +8,7 @@ const EventCard = ({ event, userData }) => {
   // const [userData, setUserData] = useState({});
   const [showModal, setShowModal] = useState(false); // modal state
   const [rsvpLoading, setRsvpLoading] = useState(false); // to handle loading state
+  const cardDataFntStyle = { fontSize: "14px" };
 
   const navigate = useNavigate();
   const remainingSlots = event.slots - event.bookeduser.length;
@@ -60,6 +61,7 @@ const EventCard = ({ event, userData }) => {
           >
             <img
               src={`${BACKEND_BASE_URL}/uploads/${event.image}`}
+              onClick={() => navigate(`/events/${event._id}`)}
               alt={event.name}
               className="card-img-top"
               style={{
@@ -67,6 +69,7 @@ const EventCard = ({ event, userData }) => {
                 top: 0,
                 left: 0,
                 objectFit: "cover",
+                cursor: "pointer",
               }}
             />
           </div>
@@ -75,38 +78,54 @@ const EventCard = ({ event, userData }) => {
           <div className="card-body p-2 col-12" style={{ fontSize: "0.6rem" }}>
             <h6 className="fw-bold m-0 p-0">{event.name}</h6>
 
-            <div className="row">
-              <div className="col-6 col-md-6">
-                <p className="fw-bold p-0 m-0">Host:</p>
-                <p className="fw-bold p-0 m-0">Location:</p>
-                <p className="fw-bold p-0 m-0">Remaining:</p>
-                <p className="fw-bold p-0 m-0">Genre:</p>
-                <p className="fw-bold p-0 m-0">Date:</p>
-
-                <button
-                  className="btn btn-sm btn-success col-6 col-sm-8 p-0 fw-bold"
-                  style={{ fontSize: "0.6rem" }}
-                  onClick={() => setShowModal(true)} // open modal
-                >
-                  RSVP
-                </button>
-              </div>
-              <div className="col-6 col-md-6">
-                <p className="p-0 m-0">{event.host}</p>
-                <p className="p-0 m-0">{event.location}</p>
-                <p className="p-0 m-0">{remainingSlots}</p>
-                <p className="p-0 m-0">{event.genre}</p>
-                <p className="p-0 m-0">
-                  {new Date(event.date).toLocaleDateString()}
-                </p>{" "}
-                <button
-                  onClick={() => navigate(`/events/${event._id}`)}
-                  className="btn btn-sm btn-primary col-6 col-sm-8 s p-0 fw-bold"
-                  style={{ fontSize: "0.6rem" }}
-                >
-                  VIEW
-                </button>
-              </div>
+            <div className="table-responsive">
+              <table className="table table-sm table-borderless mb-0">
+                <tbody>
+                  <tr>
+                    <th className="fw-bold" style={cardDataFntStyle}>
+                      Host:
+                    </th>
+                    <td style={cardDataFntStyle}>{event.host}</td>
+                  </tr>
+                  <tr>
+                    <th className="fw-bold" style={cardDataFntStyle}>
+                      Location:
+                    </th>
+                    <td style={cardDataFntStyle}>{event.location}</td>
+                  </tr>
+                  <tr>
+                    <th className="fw-bold" style={cardDataFntStyle}>
+                      Remaining:
+                    </th>
+                    <td style={cardDataFntStyle}>{remainingSlots}</td>
+                  </tr>
+                  <tr>
+                    <th className="fw-bold" style={cardDataFntStyle}>
+                      Genre:
+                    </th>
+                    <td style={cardDataFntStyle}>{event.genre}</td>
+                  </tr>
+                  <tr>
+                    <th className="fw-bold" style={cardDataFntStyle}>
+                      Date:
+                    </th>
+                    <td style={cardDataFntStyle}>
+                      {new Date(event.date).toLocaleDateString()}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan="2">
+                      <button
+                        className="btn btn-sm btn-success fw-bold w-100"
+                        style={{ fontSize: "0.6rem" }}
+                        onClick={() => setShowModal(true)}
+                      >
+                        RSVP
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

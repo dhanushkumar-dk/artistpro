@@ -7,7 +7,7 @@ const InstrumentCard = ({ instrument, userId, handleOpenRentModal }) => {
 
   return (
     <div className="col-10 col-sm-6 col-md-4 col-lg-3 mx-auto p-1 p-sm-2 p-md-3 p-lg-4">
-      <div className="card shadow-lg rounded-3 border-dark">
+      <div className="card shadow-lg rounded-2 border-dark">
         {/* Image */}
         <div
           style={{
@@ -29,7 +29,9 @@ const InstrumentCard = ({ instrument, userId, handleOpenRentModal }) => {
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              cursor: "pointer",
             }}
+            onClick={() => navigate(`/instrument/${instrument._id}`)}
           />
         </div>
 
