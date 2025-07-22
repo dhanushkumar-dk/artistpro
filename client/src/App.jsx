@@ -112,7 +112,10 @@ const App = () => {
               </Route>
 
               {/* Instrument Routes */}
-              <Route path="instruments" element={<InstrumentsComponent />} />
+              <Route
+                path="instruments"
+                element={<InstrumentsComponent user={userData} />}
+              />
               <Route path="instrument/:id" element={<InstrumentDetail />} />
 
               {/* Community, Learning, Chatbot */}

@@ -125,6 +125,13 @@ xargs npm install < requirements.txt
 
 🚀 Start Backend
 
+configure index.js before start
+
+Add your google app
+
+1. myemail
+2. mypass
+
 npm start
 
 The server will run on http://localhost:5000 or your configured port.

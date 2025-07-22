@@ -1,7 +1,5 @@
 // src/components/InstrumentDisplay.jsx
 
-import React from "react";
-
 const InstrumentDisplay = ({ instrument }) => {
   return (
     <div

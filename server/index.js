@@ -1,11 +1,13 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-
 const multer = require("multer");
+const cors = require("cors");
+const nodemailer = require("nodemailer");
 const { Server } = require("socket.io");
 const http = require("http");
+
 const path = require("path");
+
+const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -18,15 +20,6 @@ const Instrument = require("./models/InstrumentModel");
 const app = express();
 const PORT = 5000;
 const SECRET_KEY = "your_secret_key";
-
-// mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
-mongoose.connect(
-  "mongodb+srv://admin:dhanush123@cluster0.se9w4fs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
 
 // Configure Multer storage and file naming
 const storage = multer.diskStorage({
@@ -71,7 +64,7 @@ const server = http.createServer(app);
 // Create Socket.IO server
 const io = new Server(server, {
   cors: {
-    origin: "*", // Frontend origin
+    origin: "http://localhost:3000", // Frontend origin
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
@@ -87,6 +80,115 @@ io.on("connection", (socket) => {
 
 // Make `io` accessible in routes
 app.set("io", io);
+
+// mongoose.connect("mongodb://127.0.0.1:27017/ArtistCollab", {
+mongoose.connect(
+  "mongodb+srv://admin:dhanush123@cluster0.se9w4fs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+
+// -------------------------------------------------
+// -------------------------------------------------
+// -------------------------------------------------
+const myemail = "@gmail.com";
+const mypass = "16digit";
+
+// -------------------------------------------------
+// -------------------------------------------------
+// -------------------------------------------------
+const otpStore = {}; // In-memory OTP store (better to use DB or cache like Redis)
+
+app.post("/send-otp", async (req, res) => {
+  const { email } = req.body;
+
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  otpStore[email] = otp;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: myemail,
+      pass: mypass,
+    },
+  });
+
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP code is: ${otp}`,
+    });
+
+    res.status(200).json({ message: "OTP sent" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to send OTP" });
+  }
+});
+
+// -------------------------------------------------
+app.post("/verify-otp", (req, res) => {
+  const { email, otp } = req.body;
+
+  if (otpStore[email] === otp) {
+    delete otpStore[email]; // Invalidate OTP after use
+    return res.status(200).json({ verified: true });
+  }
+
+  return res.status(400).json({ verified: false, message: "Invalid OTP" });
+});
+
+// -------------------------------------------------
+
+app.post("/check-email", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ message: "Email required" });
+
+  try {
+    const userExists = await FormDataModel.findOne({ email });
+    if (userExists) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+    res.status(200).json({ message: "Email available" });
+  } catch (err) {
+    console.error("Email check error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// -------------------------------------------------
+app.post("/send-email", async (req, res) => {
+  const { to, subject, text } = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: myemail,
+      pass: mypass,
+    },
+  });
+
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text,
+    });
+
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to send email" });
+  }
+});
 
 // -------------------------------------------------
 

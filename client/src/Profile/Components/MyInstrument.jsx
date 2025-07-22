@@ -76,7 +76,7 @@ const MyInstruments = ({ user }) => {
       )
       .then((res) => {
         // Handle success (e.g., show a success message or update local state)
-        alert("Instrument returned and status updated to available!");
+        alert("Instrument returned!");
         // Re-fetch the instruments to reflect the changes
         fetchInstruments(user.userId);
       })

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BACKEND_BASE_URL } from "../../config";
 
@@ -15,6 +16,7 @@ const AddEventForm = () => {
     link: "",
   });
 
+  const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -89,9 +91,17 @@ const AddEventForm = () => {
 
   return (
     <div className="bg-white">
-      <div className="container my-5">
+      <div className="container my-1">
         <div className="row justify-content-center">
           <div className="col-lg-8">
+            <div className="d-flex justify-content-end ">
+              <button
+                className="btn btn-secondary"
+                onClick={() => navigate("/events#event_container")}
+              >
+                &larr; Back to Events
+              </button>
+            </div>
             <div className="card shadow border-0">
               <div className="card-body p-4">
                 <h2 className="mb-4 text-center text-primary">Add New Event</h2>

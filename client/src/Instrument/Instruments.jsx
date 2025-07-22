@@ -5,12 +5,12 @@ import "react-toastify/dist/ReactToastify.css";
 import InstrumentCard from "./InstrumentCard";
 import AddInstrumentForm from "./Form/addInstrumentForm";
 import RentModal from "./Component/RentalModel";
+import { BACKEND_BASE_URL } from "../config";
 
-const InstrumentsComponent = () => {
+const InstrumentsComponent = ({ user }) => {
   const [instruments, setInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [user, setUser] = useState(null);
 
   const [showRentModal, setShowRentModal] = useState(false);
   const [rentInstrumentId, setRentInstrumentId] = useState(null);
@@ -18,20 +18,6 @@ const InstrumentsComponent = () => {
     rentedDate: "",
     expectedReturnDate: "",
   });
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axios
-      .get("http://localhost:5000/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data) setUser(res.data);
-      })
-      .catch((err) => console.error("Error fetching user: ", err));
-  }, []);
 
   const fetchInstruments = async () => {
     try {
@@ -71,7 +57,7 @@ const InstrumentsComponent = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/instruments/rent/${rentInstrumentId}`,
+        `${BACKEND_BASE_URL}/instruments/rent/${rentInstrumentId}`,
         {
           rentedDate: rentForm.rentedDate,
           expectedReturnDate: rentForm.expectedReturnDate,
@@ -92,11 +78,15 @@ const InstrumentsComponent = () => {
 
   return (
     <div className="bg-light">
-      <div className="container py-5">
+      <div className="container py-1">
         <ToastContainer position="top-center" autoClose={3000} />
-        <h1 className="mb-4 text-center">Available Instruments</h1>
+        <h1 className=" text-center">
+          {instruments.length === 0
+            ? "Instruments Currently Not Available"
+            : "Available Instruments"}
+        </h1>
 
-        <div className="text-center mb-4">
+        <div className="text-center ">
           {user && (
             <button
               className="btn btn-primary"

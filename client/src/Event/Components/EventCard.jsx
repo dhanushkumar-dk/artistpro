@@ -5,7 +5,6 @@ import { BACKEND_BASE_URL } from "../../config";
 import axios from "axios";
 
 const EventCard = ({ event, userData }) => {
-  // const [userData, setUserData] = useState({});
   const [showModal, setShowModal] = useState(false); // modal state
   const [rsvpLoading, setRsvpLoading] = useState(false); // to handle loading state
   const cardDataFntStyle = { fontSize: "14px" };
@@ -25,7 +24,6 @@ const EventCard = ({ event, userData }) => {
     axios
       .post(
         `${BACKEND_BASE_URL}/eventsdata/${event._id}/rsvp`,
-        // { userId: userData.userId },
         { userId: userData._id },
         {
           headers: {
@@ -36,6 +34,37 @@ const EventCard = ({ event, userData }) => {
       .then((res) => {
         alert("RSVP successful!");
         setShowModal(false);
+
+        // send confirmation email to user
+        axios
+          .post(`${BACKEND_BASE_URL}/send-email`, {
+            to: userData.email,
+            subject: `RSVP Confirmation for ${event.name}`,
+            text: `Hi ${userData.firstName} ${userData.lastName},
+
+Thank you for RSVPing to "${event.name}".
+
+Event Details:
+- 📍 Location: ${event.location}
+- 📅 Date: ${new Date(event.date).toLocaleDateString()}
+- 📝 Description: ${event.description}
+
+We look forward to seeing you there!
+
+Best regards,
+The Events Team
+`,
+          })
+          .then((res) => {
+            console.log("Email sent successfully");
+          })
+          .catch((err) => {
+            console.error(
+              "Failed to send email: " +
+                (err.response?.data?.message || err.message)
+            );
+          });
+
         // optionally refresh events list or update parent state here
       })
       .catch((err) => {
@@ -48,6 +77,14 @@ const EventCard = ({ event, userData }) => {
 
   return (
     <>
+      <style>
+        {`
+          th, td {
+            padding: 0px !important;
+          }
+        `}
+      </style>
+
       <div className="col-12 col-sm-6 col-md-4 col-lg-3 m-0 p-1 p-sm-2 p-md-3 p-lg-4">
         <div className="card shadow-lg rounded-3 border-dark">
           <div
@@ -131,7 +168,7 @@ const EventCard = ({ event, userData }) => {
         </div>
       </div>
 
-      {/*  Modal Component */}
+      {/* Modal Component */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm RSVP</Modal.Title>
