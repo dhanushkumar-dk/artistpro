@@ -195,11 +195,3 @@ Socket.IO
 Mongoose
 Express
 Node.js
-
----
-
-✅ Instructions
-
-✔ Replace [2025] with the current year  
-✔ Replace LinkedIn URL with your actual LinkedIn profile  
-✔ Add .env instructions in a new section if your server needs environment variables.
