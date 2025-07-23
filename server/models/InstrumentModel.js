@@ -14,6 +14,9 @@ const instrumentSchema = new mongoose.Schema({
   rentedDate: { type: Date },
   expectedReturnDate: { type: Date },
   renterId: { type: String },
+  renterMobile: { type: String }, // New field
+  renterEmail: { type: String }, // New field
+  renterAddress: { type: String }, // New field
 });
 
 module.exports = mongoose.model("Instrument", instrumentSchema);

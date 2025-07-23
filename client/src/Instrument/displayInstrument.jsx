@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import RentModal from "./Component/RentalModel";
 import { BACKEND_BASE_URL } from "../config";
 
-const InstrumentDetail = () => {
+const InstrumentDetail = ({ user }) => {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -57,8 +57,10 @@ const InstrumentDetail = () => {
         {
           rentedDate: rentForm.rentedDate,
           expectedReturnDate: rentForm.expectedReturnDate,
-          renterId: instrument.userId, // adjust as per backend schema
-          status: "not available",
+          renterId: user.userId,
+          renterMobile: user.phone,
+          renterEmail: user.email,
+          renterAddress: user.address,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -91,7 +93,7 @@ const InstrumentDetail = () => {
         }
       );
 
-      alert("Instrument returned and status updated to available!");
+      alert("Successfully Instrument Returned !");
       fetchInstrumentDetails();
     } catch (error) {
       console.error("Error returning instrument: ", error);
@@ -154,23 +156,56 @@ const InstrumentDetail = () => {
           </p>
 
           {/* Action Button */}
-          {instrument.status === "available" ? (
-            <button
-              className="btn btn-primary w-100 mt-3"
-              onClick={() => setShowRentModal(true)}
-            >
-              Rent This Instrument
-            </button>
+          {instrument.userId !== user.userId ? (
+            instrument.status === "available" ? (
+              <button
+                className="btn btn-primary w-100 mt-3"
+                onClick={() => setShowRentModal(true)}
+              >
+                Rent This Instrument
+              </button>
+            ) : (
+              <button
+                className="btn btn-warning w-100 mt-3"
+                onClick={handleReturnInstrument}
+              >
+                Return This Instrument
+              </button>
+            )
           ) : (
-            <button
-              className="btn btn-warning w-100 mt-3"
-              onClick={handleReturnInstrument}
-            >
-              Return This Instrument
-            </button>
+            <></>
           )}
         </div>
       </div>
+
+      {instrument.status !== "available" && (
+        <div className="mt-5 p-4 border-top">
+          <h4 className="mb-3">Renter Details</h4>
+
+          <div className="col-md-8">
+            <p>
+              <strong>Renter ID:</strong> {instrument.renterId}
+            </p>
+            <p>
+              <strong>Email:</strong> {instrument.renterEmail}
+            </p>
+            <p>
+              <strong>Mobile:</strong> {instrument.renterMobile}
+            </p>
+            <p>
+              <strong>Address:</strong> {instrument.renterAddress}
+            </p>
+            <p>
+              <strong>Rented Date:</strong>{" "}
+              {new Date(instrument.rentedDate).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Expected Return:</strong>{" "}
+              {new Date(instrument.expectedReturnDate).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Rent Modal */}
       <RentModal

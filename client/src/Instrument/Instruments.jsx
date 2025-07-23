@@ -22,7 +22,7 @@ const InstrumentsComponent = ({ user }) => {
   const fetchInstruments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/instruments");
+      const response = await axios.get(`${BACKEND_BASE_URL}/instruments`);
       const available = response.data.filter(
         (instrument) => instrument.status === "available"
       );
@@ -56,18 +56,23 @@ const InstrumentsComponent = ({ user }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
+
       await axios.put(
         `${BACKEND_BASE_URL}/instruments/rent/${rentInstrumentId}`,
         {
           rentedDate: rentForm.rentedDate,
           expectedReturnDate: rentForm.expectedReturnDate,
           renterId: user.userId,
-          status: "not available",
+          renterMobile: user.phone,
+          renterEmail: user.email,
+          renterAddress: user.address,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      alert("Instrument rented successfully!");
       setShowRentModal(false);
       setRentForm({ rentedDate: "", expectedReturnDate: "" });
       fetchInstruments();
@@ -78,7 +83,7 @@ const InstrumentsComponent = ({ user }) => {
 
   return (
     <div className="bg-light">
-      <div className="container py-1">
+      <div className="container py-1 bg-light">
         <ToastContainer position="top-center" autoClose={3000} />
         <h1 className=" text-center">
           {instruments.length === 0

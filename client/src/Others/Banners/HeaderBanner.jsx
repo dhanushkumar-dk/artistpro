@@ -40,6 +40,10 @@ const HeaderBanner = ({ userName, setUserName, isLoggedIn, setIsLoggedIn }) => {
     navigate("/profile");
     setShowDropdown(false);
   };
+  const handleMyInstrumentClick = () => {
+    navigate("/profile/my-instruments");
+    setShowDropdown(false);
+  };
 
   return (
     <>
@@ -126,6 +130,13 @@ const HeaderBanner = ({ userName, setUserName, isLoggedIn, setIsLoggedIn }) => {
                     onClick={handleProfileClick}
                   >
                     Profile
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    style={{ cursor: "pointer" }}
+                    onClick={handleMyInstrumentClick}
+                  >
+                    Instruments
                   </div>
                   <div
                     className="dropdown-item text-danger"

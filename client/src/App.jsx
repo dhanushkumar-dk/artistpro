@@ -62,7 +62,7 @@ const App = () => {
     <Router>
       <div className="d-flex flex-column min-vh-100">
         <ToastContainer position="top-center" autoClose={3000} />
-        <div className="flex-grow-1">
+        <div className="flex-grow-1 bg-white">
           <Routes>
             <Route
               path="/"
@@ -116,7 +116,10 @@ const App = () => {
                 path="instruments"
                 element={<InstrumentsComponent user={userData} />}
               />
-              <Route path="instrument/:id" element={<InstrumentDetail />} />
+              <Route
+                path="instrument/:id"
+                element={<InstrumentDetail user={userData} />}
+              />
 
               {/* Community, Learning, Chatbot */}
               {/* loggedInUser = userData */}

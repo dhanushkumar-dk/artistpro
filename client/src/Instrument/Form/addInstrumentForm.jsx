@@ -1,22 +1,26 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { BACKEND_BASE_URL } from "../../config";
 
 const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
   const [formData, setFormData] = useState({
     instrumentName: "",
-    description: "",
+    instrumentDescription: "",
     category: "",
     amount: "",
     imageUrl: "",
     userId: user?.userId || "",
     userName: user ? `${user.firstName} ${user.lastName}` : "",
-    address: "",
-    contactNumber: "",
+    address: user?.address || "",
+    contactNumber: user?.phone || "",
     status: "available",
     rentedDate: "",
     expectedReturnDate: "",
     renterId: "",
+    renterMobile: "",
+    renterEmail: "",
+    renterAddress: "",
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -43,7 +47,7 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
     if (
       !formData.instrumentName ||
       !formData.amount ||
-      !formData.description ||
+      !formData.instrumentDescription || // ✅ fixed field
       !formData.contactNumber ||
       !formData.address
     ) {
@@ -59,8 +63,9 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
 
     try {
       const token = localStorage.getItem("token");
+
       await axios.post(
-        "http://localhost:5000/addnewinstrument",
+        `${BACKEND_BASE_URL}/addnewinstrument`,
         formDataToSubmit,
         {
           headers: {
@@ -71,11 +76,11 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
       );
 
       toast.success("Instrument added successfully!");
-      onClose(); // close form
-      refreshInstruments(); // refresh list if needed
+      onClose();
+      refreshInstruments();
       setFormData({
         instrumentName: "",
-        description: "",
+        instrumentDescription: "", // ✅ reset
         category: "",
         amount: "",
         imageUrl: "",
@@ -87,6 +92,9 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
         rentedDate: "",
         expectedReturnDate: "",
         renterId: "",
+        renterMobile: "",
+        renterEmail: "",
+        renterAddress: "",
       });
       setImageFile(null);
     } catch (error) {
@@ -99,7 +107,7 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
     onClose();
     setFormData({
       instrumentName: "",
-      description: "",
+      instrumentDescription: "", // ✅ reset
       category: "",
       amount: "",
       imageUrl: "",
@@ -111,6 +119,9 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
       rentedDate: "",
       expectedReturnDate: "",
       renterId: "",
+      renterMobile: "",
+      renterEmail: "",
+      renterAddress: "",
     });
     setImageFile(null);
   };
@@ -164,10 +175,10 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
 
         <div className="col-12">
           <textarea
-            name="description"
+            name="instrumentDescription"
             className="form-control"
             placeholder="Description"
-            value={formData.description}
+            value={formData.instrumentDescription}
             onChange={handleChange}
             required
           />
@@ -232,47 +243,6 @@ const AddInstrumentForm = ({ user, onClose, refreshInstruments }) => {
             </div>
           </>
         )}
-
-        <div className="col-md-6">
-          <input
-            type="text"
-            name="address"
-            className="form-control"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="col-md-6">
-          <input
-            type="text"
-            name="contactNumber"
-            className="form-control"
-            placeholder="Contact Number"
-            value={formData.contactNumber}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="col-md-6">
-          <input
-            type="text"
-            className="form-control"
-            value={formData.userId}
-            readOnly
-          />
-        </div>
-        <div className="col-md-6">
-          <input
-            type="text"
-            className="form-control"
-            value={formData.userName}
-            readOnly
-          />
-        </div>
       </div>
 
       <div className="d-flex justify-content-center gap-3">

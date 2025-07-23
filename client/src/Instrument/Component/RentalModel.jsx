@@ -1,5 +1,3 @@
-import React from "react";
-
 const RentModal = ({ show, onClose, onSubmit, rentForm, handleRentChange }) => {
   if (!show) return null;
 

@@ -1,5 +1,4 @@
 // src/components/EventCard.jsx
-import React from "react";
 
 export const RecommendationEventCard = ({
   image,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { BACKEND_BASE_URL } from "../config";
 
 import EventsBanner from "./Components/EventsBanner";
 import EventCard from "./Components/EventCard"; // import here
@@ -52,8 +53,8 @@ const Events = ({ userData }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get(process.env.REACT_APP_EVENTS_API);
-
+        // const response = await axios.get(process.env.REACT_APP_EVENTS_API);
+        const response = await axios.get(`${BACKEND_BASE_URL}/eventsdata`);
         if (response.data.success) {
           const eventData = response.data.events;
           setEvents(eventData);

@@ -636,6 +636,7 @@ app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
     const {
       instrumentName,
       instrumentDescription,
+      category,
       amount,
       userId,
       userName,
@@ -645,14 +646,24 @@ app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
       rentedDate,
       expectedReturnDate,
       renterId,
-      category, // New field
+      renterMobile,
+      renterEmail,
+      renterAddress,
     } = req.body;
+
+    // Basic required field check
+    if (!instrumentName || !category || !userId || !userName) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const image = req.file?.filename || "";
 
     const newInstrument = new Instrument({
       instrumentName,
       instrumentDescription,
+      category,
       amount,
-      image: req.file ? req.file.filename : "",
+      image,
       userId,
       userName,
       address,
@@ -661,30 +672,35 @@ app.post("/addnewinstrument", upload.single("image"), async (req, res) => {
       rentedDate,
       expectedReturnDate,
       renterId,
-      category, // Save category
+      renterMobile,
+      renterEmail,
+      renterAddress,
     });
 
     await newInstrument.save();
+
     res.status(201).json({ message: "Instrument added successfully!" });
   } catch (err) {
+    console.error("Error adding instrument:", err);
     res.status(500).json({ error: "Failed to add instrument" });
   }
 });
 
 app.get("/instruments", async (req, res) => {
   try {
-    const instruments = await Instrument.find();
+    const instruments = await Instrument.find().sort({ createdAt: -1 }); // newest first
     res.status(200).json(instruments);
-  } catch (error) {
-    console.error("Error fetching instruments:", error);
-    res.status(500).json({ error: "Unable to fetch instruments." });
+  } catch (err) {
+    console.error("Error fetching instruments:", err);
+    res.status(500).json({ error: "Failed to fetch instruments" });
   }
 });
 
 // Get a specific instrument by ID
 app.get("/instruments/:id", async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
     const instrument = await Instrument.findById(id);
 
     if (!instrument) {
@@ -692,60 +708,70 @@ app.get("/instruments/:id", async (req, res) => {
     }
 
     res.status(200).json(instrument);
-  } catch (error) {
-    console.error("Error fetching instrument by ID:", error);
-    res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    console.error("Error fetching instrument by ID:", err);
+    res.status(500).json({ error: "Failed to fetch instrument" });
   }
 });
 
 app.put("/instruments/rent/:id", async (req, res) => {
-  const { rentedDate, expectedReturnDate } = req.body;
   const instrumentId = req.params.id;
 
+  const {
+    rentedDate,
+    expectedReturnDate,
+    renterId,
+    renterMobile,
+    renterEmail,
+    renterAddress,
+  } = req.body;
+
   try {
-    // Extract token from the Authorization header
+    // Token verification for authentication
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No token provided" });
     }
 
-    // Verify the token and extract user information
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const renterId = decoded.userId; // Get the user ID from the decoded token
+    jwt.verify(token, SECRET_KEY); // Authentication only
 
-    // Find the instrument by ID
+    // Find instrument
     const instrument = await Instrument.findById(instrumentId);
     if (!instrument) {
-      return res.status(404).json({ message: "Instrument not found." });
+      return res.status(404).json({ message: "Instrument not found" });
     }
 
-    // Check if the logged-in user is the owner of the instrument
+    // Prevent owner from renting their own instrument
     if (instrument.userId === renterId) {
       return res
         .status(400)
         .json({ message: "You cannot rent your own instrument." });
     }
 
-    // Check if the instrument is available for rent
+    // Check availability
     if (instrument.status !== "available") {
       return res
         .status(400)
         .json({ message: "Instrument is not available for rent." });
     }
 
-    // Update the instrument status to 'not available' and set rental details
+    // Update instrument rental details
     instrument.status = "not available";
     instrument.rentedDate = rentedDate;
     instrument.expectedReturnDate = expectedReturnDate;
     instrument.renterId = renterId;
+    instrument.renterMobile = renterMobile;
+    instrument.renterEmail = renterEmail;
+    instrument.renterAddress = renterAddress;
 
-    // Save the changes to the instrument
     await instrument.save();
 
-    // Send the success response
-    res
-      .status(200)
-      .json({ message: "Instrument rented successfully!", instrument });
+    res.status(200).json({
+      message: "Instrument rented successfully!",
+      instrument,
+    });
   } catch (error) {
     console.error("Error renting instrument:", error);
     res.status(500).json({ error: "Unable to rent the instrument." });
@@ -757,45 +783,47 @@ app.put("/instruments/return/:id", async (req, res) => {
   const instrumentId = req.params.id;
 
   try {
-    // Extract token from the Authorization header
+    // Get token and verify
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No token provided" });
     }
 
-    // Verify the token and extract user information
     const decoded = jwt.verify(token, SECRET_KEY);
-    const userId = decoded.userId; // Get the user ID from the decoded token
+    const userId = decoded.userId;
 
-    // Find the instrument by ID
+    // Fetch instrument
     const instrument = await Instrument.findById(instrumentId);
     if (!instrument) {
       return res.status(404).json({ message: "Instrument not found." });
     }
 
-    // Check if the logged-in user is the renter of the instrument
+    // Ensure user is the renter
     if (instrument.renterId !== userId) {
       return res
-        .status(400)
+        .status(403)
         .json({ message: "You are not the renter of this instrument." });
     }
 
-    // Reset rented details and update status to "available"
+    // Reset rental status
     instrument.status = "available";
-    instrument.rentedDate = "";
-    instrument.expectedReturnDate = "";
-    instrument.renterId = "";
+    instrument.rentedDate = null;
+    instrument.expectedReturnDate = null;
+    instrument.renterId = null;
+    instrument.renterMobile = null;
+    instrument.renterEmail = null;
+    instrument.renterAddress = null;
 
-    // Save the changes to the instrument
     await instrument.save();
 
-    // Send the success response
     res.status(200).json({
-      message: "Instrument returned and status updated to available!",
+      message: "Instrument returned successfully and marked as available.",
       instrument,
     });
   } catch (error) {
-    console.error("Error updating instrument status:", error);
+    console.error("Error returning instrument:", error);
     res.status(500).json({ error: "Unable to return the instrument." });
   }
 });

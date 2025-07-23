@@ -1,3 +1,4 @@
+import { BACKEND_BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 
 const InstrumentCard = ({ instrument, userId, handleOpenRentModal }) => {
@@ -19,7 +20,7 @@ const InstrumentCard = ({ instrument, userId, handleOpenRentModal }) => {
           }}
         >
           <img
-            src={`http://localhost:5000/uploads/${instrument.image}`}
+            src={`${BACKEND_BASE_URL}/uploads/${instrument.image}`}
             alt={instrument.instrumentName}
             className="card-img-top"
             style={{

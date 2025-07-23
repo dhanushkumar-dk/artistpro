@@ -137,7 +137,6 @@ const MyInstruments = ({ user }) => {
             <thead className="table-dark">
               <tr>
                 <th>Instrument Name</th>
-                <th>Description</th>
                 <th>Amount</th>
                 <th>Rented Date</th>
                 <th>Expected Return</th>
@@ -159,7 +158,6 @@ const MyInstruments = ({ user }) => {
                   }
                 >
                   <td>{instrument.instrumentName}</td>
-                  <td>{instrument.instrumentDescription}</td>
                   <td>${instrument.amount}</td>
                   {/* <td>{instrument.rentedDate}</td>
                   <td>{instrument.expectedReturnDate}</td> */}

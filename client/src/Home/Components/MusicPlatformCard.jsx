@@ -1,7 +1,5 @@
 // src/components/MusicPlatformCard.jsx
 
-import React from "react";
-
 const MusicPlatformCard = ({ imgSrc, alt, name }) => {
   return (
     <div className="col-12 col-sm-6 col-md-4">
